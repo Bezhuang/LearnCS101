@@ -4,7 +4,13 @@
 
 # 已完成
 - C语言（郝斌）
-- 从C到C++教程（农大阚道宏、C语言中文网）
 - 数据结构（浙大陈越姥姥）
 - Python for Everybody（UMich）
 - Python for Data Science and AI（IBM）
+
+# 正在进行
+
+
+
+- 从C到C++教程（农大阚道宏、C语言中文网）
+- Java训练营（阿里云）
