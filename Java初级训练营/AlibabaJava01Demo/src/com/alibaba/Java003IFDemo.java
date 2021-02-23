@@ -3,21 +3,21 @@ package com.alibaba;
 public class Java003IFDemo {
 
 	public static void main(String[] args) {
-		// IFÅĞ¶ÏÓï¾ä
+		// IFåˆ¤æ–­è¯­å¥
 		int num = 9000;
 		if (num >= 10000000) {
-			System.out.println("³¬¼¶¸»ºÀ³ÌĞòÔ±");
+			System.out.println("è¶…çº§å¯Œè±ªç¨‹åºå‘˜");
 		} else if (num >= 1000000) {
-			System.out.println("¸»ºÀ³ÌĞòÔ±");
+			System.out.println("å¯Œè±ªç¨‹åºå‘˜");
 		}
 		else if (num >= 100000) {
-			System.out.println("ÖĞ²ú³ÌĞòÔ±");
+			System.out.println("ä¸­äº§ç¨‹åºå‘˜");
 		}
 		else if (num >= 10000) {
-			System.out.println("ÂëÅ©");
+			System.out.println("ç å†œ");
 		}
 		else {
-		      System.out.println("ÂëĞó");
+		      System.out.println("ç ç•œ");
 		}
 	}
 
