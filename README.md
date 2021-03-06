@@ -7,6 +7,8 @@
 - 浙大数据结构（陈越姥姥）
 - Python for Everybody（UMich）
 - Python for Data Science and AI（IBM）
+- Python Project for Data Science（IBM）
+- Data Visualization With Python（IBM）
 - Databases and SQL for Data Science with Python（IBM）
 - Java初级训练营（阿里云侠客）
 
@@ -15,4 +17,3 @@
 - 从C到C++教程（农大阚道宏、C语言中文网）
 - 天勤数据结构（2021）
 - Data Analysis With Python（IBM）
-- Data Visualization With Python（IBM）
