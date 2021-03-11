@@ -1,0 +1,164 @@
+C51 COMPILER V9.01   MAIN                                                                  04/12/2019 10:17:21 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          /*
+   2          实验说明：
+   3            
+   4          实验接线：
+   5            独立按键模块-->单片机管脚
+   6            K1-->P31
+   7            K2-->P30
+   8            K3-->P32
+   9            K4-->P33(未使用，大家可以自己扩展功能)
+  10            动态数码管模块-->单片机管脚
+  11            参考动态数码管实验接线（开发攻略内在对应的实验章节内实验现象有接线说明）
+  12          实验现象：
+  13            按下K1键，数值加1，按下K2键，数值减1，按下K3键数值清零
+  14          */
+  15          
+  16          #include "reg52.h"       //此文件中定义了单片机的一些特殊功能寄存器
+  17          
+  18          typedef unsigned int u16;   //对数据类型进行声明定义
+  19          typedef unsigned char u8;
+  20          
+  21          sbit LSA=P2^2;
+  22          sbit LSB=P2^3;
+  23          sbit LSC=P2^4;
+  24          
+  25          sbit k1=P3^1;
+  26          sbit k2=P3^0;
+  27          sbit k3=P3^2;
+  28          sbit k4=P3^3;  //定义按键端口
+  29          
+  30          u8 code smgduan[17]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,
+  31                    0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};//显示0~F的值
+  32          
+  33          
+  34          #define KEY1 1
+  35          #define KEY2 2
+  36          #define KEY3 3
+  37          #define KEY4 4
+  38          
+  39          char keynum;
+  40          u8 DisplayData[8];
+  41          /*******************************************************************************
+  42          * 函 数 名         : delay
+  43          * 函数功能       : 延时函数，i=1时，大约延时10us
+  44          *******************************************************************************/
+  45          void delay(u16 i)
+  46          {
+  47   1        while(i--); 
+  48   1      }
+  49          
+  50          //mode=0 单次   1：连续
+  51          u8 KeyScan(u8 mode)
+  52          {
+  53   1        static u8 keyen=1;
+  54   1        if(mode==1)
+  55   1        {
+C51 COMPILER V9.01   MAIN                                                                  04/12/2019 10:17:21 PAGE 2   
+
+  56   2          keyen=1;
+  57   2        }
+  58   1        if(keyen==1&&(k1==0||k2==0||k3==0||k4==0))
+  59   1        {
+  60   2          delay(1000);  //消抖处理
+  61   2          keyen=0;
+  62   2          if(k1==0)return KEY1;
+  63   2          else if(k2==0)return KEY2;
+  64   2          else if(k3==0)return KEY3;
+  65   2          else if(k4==0)return KEY4;        
+  66   2        }
+  67   1        else if(k1==1&&k2==1&&k3==1&&k4==1)
+  68   1        {
+  69   2          keyen=1;
+  70   2        }
+  71   1        return 0; 
+  72   1      }
+  73          
+  74          
+  75          /*******************************************************************************
+  76          * 函 数 名         : DigDisplay
+  77          * 函数功能       : 数码管动态扫描函数，循环扫描8个数码管显示
+  78          *******************************************************************************/
+  79          void DigDisplay()
+  80          {
+  81   1        u8 i;
+  82   1        for(i=0;i<8;i++)
+  83   1        {
+  84   2          switch(i)  //位选，选择点亮的数码管，
+  85   2          {
+  86   3            case(0):
+  87   3              LSA=1;LSB=1;LSC=1; break;//显示第7位
+  88   3            case(1):
+  89   3              LSA=0;LSB=1;LSC=1; break;//显示第6位
+  90   3            case(2):
+  91   3              LSA=1;LSB=0;LSC=1; break;//显示第5位
+  92   3            case(3):
+  93   3              LSA=0;LSB=0;LSC=1; break;//显示第4位
+  94   3            case(4):
+  95   3              LSA=1;LSB=1;LSC=0; break;//显示第3位 
+  96   3            case(5):
+  97   3              LSA=0;LSB=1;LSC=0; break;//显示第2位 
+  98   3            case(6):
+  99   3              LSA=1;LSB=0;LSC=0; break;//显示第1位 
+ 100   3            case(7):
+ 101   3              LSA=0;LSB=0;LSC=0; break;//显示第0位  
+ 102   3          }
+ 103   2          P0=DisplayData[i];//发送段码
+ 104   2          delay(100); //间隔一段时间扫描  
+ 105   2          P0=0x00;//消隐
+ 106   2        }
+ 107   1      }
+ 108          
+ 109          void datapros()
+ 110          {
+ 111   1        u8 key=KeyScan(0);
+ 112   1        switch(key)
+ 113   1        {
+ 114   2          case 1:  keynum++;if(keynum==100)keynum=0; break;
+ 115   2          case 2:  keynum--;if(keynum<=0)keynum=99; break;
+ 116   2          case 3:  keynum=0; break;
+ 117   2          case 4:   break;
+C51 COMPILER V9.01   MAIN                                                                  04/12/2019 10:17:21 PAGE 3   
+
+ 118   2        }
+ 119   1        DisplayData[0]=smgduan[keynum/10];
+ 120   1        DisplayData[1]=smgduan[keynum%10];
+ 121   1      }
+ 122          /*******************************************************************************
+ 123          * 函 数 名       : main
+ 124          * 函数功能     : 主函数
+ 125          * 输    入       : 无
+ 126          * 输    出       : 无
+ 127          *******************************************************************************/
+ 128          void main()
+ 129          { 
+ 130   1        while(1)
+ 131   1        {
+ 132   2          datapros();
+ 133   2          DigDisplay(); 
+ 134   2        }   
+ 135   1      }
+ 136          
+ 137          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    306    ----
+   CONSTANT SIZE    =     17    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     10    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

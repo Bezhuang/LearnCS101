@@ -1,0 +1,177 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        11/21/2019  09:51:09  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL4\C51\BIN\BL51.EXE main.obj TO project RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  main.obj (MAIN)
+  D:\KEIL4\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  project (MAIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0006H     UNIT         ?DT?MAIN
+            IDATA   000EH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0008H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     0056H     UNIT         ?PR?TIME0?MAIN
+            CODE    0064H     001BH     UNIT         ?PR?MAIN?MAIN
+            CODE    007FH     000EH     UNIT         ?PR?TIME0INIT?MAIN
+            CODE    008DH     000EH     UNIT         ?PR?BIAOHAOINIT?MAIN
+            CODE    009BH     000CH     UNIT         ?C_C51STARTUP
+            CODE    00A7H     000BH     UNIT         ?PR?_DELAY?MAIN
+
+
+
+OVERLAY MAP OF MODULE:   project (MAIN)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?MAIN
+
+?PR?MAIN?MAIN
+  +--> ?PR?TIME0INIT?MAIN
+  +--> ?PR?BIAOHAOINIT?MAIN
+  +--> ?PR?_DELAY?MAIN
+
+
+
+SYMBOL TABLE OF MODULE:  project (MAIN)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAIN
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/21/2019  09:51:09  PAGE 2
+
+
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  B:00A8H.7       PUBLIC        EA
+  D:00A8H         PUBLIC        IE
+  C:008DH         PUBLIC        biaohaoinit
+  C:00A7H         PUBLIC        _delay
+  C:007FH         PUBLIC        time0init
+  D:00B8H         PUBLIC        IP
+  D:0008H         PUBLIC        flag
+  B:00B0H.1       PUBLIC        k1
+  B:00A0H.5       PUBLIC        beep
+  D:0009H         PUBLIC        ding
+  D:00D8H         PUBLIC        CCON
+  C:0064H         PUBLIC        main
+  D:000AH         PUBLIC        dong
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  D:000BH         PUBLIC        stop
+  B:00A8H.1       PUBLIC        ET0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  B:0088H.4       PUBLIC        TR0
+  C:000EH         PUBLIC        time0
+  D:000CH         PUBLIC        n
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        i
+  C:00A7H         LINE#         24
+  C:00A7H         LINE#         25
+  C:00A7H         LINE#         26
+  C:00B1H         LINE#         27
+  -------         ENDPROC       _DELAY
+  -------         PROC          TIME0INIT
+  C:007FH         LINE#         28
+  C:007FH         LINE#         29
+  C:007FH         LINE#         30
+  C:0082H         LINE#         31
+  C:0085H         LINE#         32
+  C:0088H         LINE#         34
+  C:008AH         LINE#         35
+  C:008CH         LINE#         36
+  -------         ENDPROC       TIME0INIT
+  -------         PROC          BIAOHAOINIT
+  C:008DH         LINE#         37
+  C:008DH         LINE#         38
+  C:008DH         LINE#         39
+  C:0090H         LINE#         40
+  C:0092H         LINE#         41
+  C:0096H         LINE#         42
+  C:0098H         LINE#         43
+  C:009AH         LINE#         44
+  -------         ENDPROC       BIAOHAOINIT
+  -------         PROC          MAIN
+  C:0064H         LINE#         45
+  C:0064H         LINE#         46
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/21/2019  09:51:09  PAGE 3
+
+
+  C:0064H         LINE#         47
+  C:0067H         LINE#         48
+  C:006AH         LINE#         49
+  C:006AH         LINE#         50
+  C:006AH         LINE#         51
+  C:006DH         LINE#         52
+  C:006DH         LINE#         53
+  C:0074H         LINE#         54
+  C:0077H         LINE#         55
+  C:0077H         LINE#         56
+  C:0079H         LINE#         57
+  -------         ENDPROC       MAIN
+  -------         PROC          TIME0
+  C:000EH         LINE#         62
+  C:0012H         LINE#         64
+  C:001AH         LINE#         65
+  C:001DH         LINE#         66
+  C:0020H         LINE#         67
+  C:002AH         LINE#         68
+  C:002AH         LINE#         69
+  C:0030H         LINE#         70
+  C:0034H         LINE#         71
+  C:0034H         LINE#         72
+  C:0037H         LINE#         73
+  C:0039H         LINE#         75
+  C:0039H         LINE#         76
+  C:003CH         LINE#         77
+  C:003FH         LINE#         78
+  C:0041H         LINE#         79
+  C:0041H         LINE#         80
+  C:0041H         LINE#         81
+  C:0045H         LINE#         82
+  C:0045H         LINE#         83
+  C:0047H         LINE#         84
+  C:004CH         LINE#         85
+  C:004CH         LINE#         86
+  C:004FH         LINE#         87
+  C:0051H         LINE#         88
+  C:0051H         LINE#         89
+  C:0053H         LINE#         91
+  C:0053H         LINE#         92
+  C:0055H         LINE#         93
+  C:005AH         LINE#         94
+  C:005AH         LINE#         95
+  C:005DH         LINE#         96
+  C:005FH         LINE#         97
+  C:005FH         LINE#         98
+  C:005FH         LINE#         99
+  -------         ENDPROC       TIME0
+  -------         ENDMOD        MAIN
+
+Program Size: data=15.0 xdata=0 code=170
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

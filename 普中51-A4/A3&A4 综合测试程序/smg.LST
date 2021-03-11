@@ -1,0 +1,79 @@
+C51 COMPILER V9.01   SMG                                                                   09/20/2019 08:40:57 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE SMG
+OBJECT MODULE PLACED IN smg.OBJ
+COMPILER INVOKED BY: D:\YZ\KEILC51\C51\BIN\C51.EXE smg.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include "smg.h"
+   2          
+   3          
+   4          
+   5          void DigDisplay(void)
+   6          {
+   7   1              u8 i;
+   8   1              for(i=0;i<8;i++)
+   9   1              {
+  10   2                      switch(i)        //位选，选择点亮的数码管，
+  11   2                      {
+  12   3                              case(0):
+  13   3                                      LSA=0;LSB=0;LSC=0; break;//显示第0位
+  14   3                              case(1):
+  15   3                                      LSA=1;LSB=0;LSC=0; break;//显示第1位
+  16   3                              case(2):
+  17   3                                      LSA=0;LSB=1;LSC=0; break;//显示第2位
+  18   3                              case(3):
+  19   3                                      LSA=1;LSB=1;LSC=0; break;//显示第3位
+  20   3                              case(4):
+  21   3                                      LSA=0;LSB=0;LSC=1; break;//显示第4位
+  22   3                              case(5):
+  23   3                                      LSA=1;LSB=0;LSC=1; break;//显示第5位
+  24   3                              case(6):
+  25   3                                      LSA=0;LSB=1;LSC=1; break;//显示第6位
+  26   3                              case(7):
+  27   3                                      LSA=1;LSB=1;LSC=1; break;//显示第7位    
+  28   3                      }
+  29   2                      SMG_PORT=DisPlayData[7-i];//发送段码
+  30   2                      delay(100); //间隔一段时间扫描  
+  31   2                      SMG_PORT=0x00;//消隐
+  32   2              }
+  33   1      }
+  34          
+  35          void SMG_Test(void)
+  36          {
+  37   1              u8 i=0;
+  38   1              for(i=0;i<8;i++)
+  39   1              {
+  40   2                      DisPlayData[i]=smgduan[i];      
+  41   2              }
+  42   1              while(1)
+  43   1              {
+  44   2              
+  45   2                      DigDisplay();
+  46   2                      
+  47   2                      if(KeyValue!=SMG_TEST)
+  48   2                      {
+  49   3                              SMG_PORT=0x00;
+  50   3                              return; 
+  51   3                      }       
+  52   2              }
+  53   1      }
+  54          
+
+C51 COMPILER V9.01   SMG                                                                   09/20/2019 08:40:57 PAGE 2   
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    149    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

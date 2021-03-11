@@ -1,0 +1,124 @@
+C51 COMPILER V9.01   MAIN                                                                  11/21/2019 09:51:08 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: D:\keil4\C51\BIN\C51.EXE main.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*
+   2          实验说明：
+   3                  
+   4          实验接线：
+   5                  蜂鸣器模块-->单片机管脚
+   6                  参考蜂鸣器实验接线（开发攻略内在对应的实验章节内实验现象有接线说明）
+   7                  BEEP-->P15
+   8                  独立按键模块-->单片机管脚
+   9                  K1-->P31
+  10          实验现象：
+  11                  按下K1键，蜂鸣器发出”叮咚”门铃声
+  12          */
+  13          
+  14          
+  15          #include "reg52.h"                       //此文件中定义了单片机的一些特殊功能寄存器
+  16          
+  17          typedef unsigned int u16;         //对数据类型进行声明定义
+  18          typedef unsigned char u8;
+  19          
+  20          sbit beep=P2^5;
+  21          sbit k1=P3^1;
+  22          u8 ding,dong,flag,stop;
+  23          u16 n;
+  24          void delay(u16 i)
+  25          {
+  26   1              while(i--);
+  27   1      }
+  28          void time0init()          //定时器0初始化
+  29          {
+  30   1              TMOD=0X01;       //定时器0 方式1
+  31   1              TH0=0Xff;
+  32   1              TL0=0X06; //定时250us
+  33   1      //      TR0=1;
+  34   1              EA=1;
+  35   1              ET0=1;
+  36   1      }
+  37          void biaohaoinit()         //各个标号初始化
+  38          {
+  39   1              ding=0;         //叮声音  计数标志
+  40   1              dong=0;         //咚声音  计数标志
+  41   1              n=0;            //定时0.5s标志
+  42   1              flag=0;
+  43   1              stop=0;    //结束标志
+  44   1      }
+  45          void main()
+  46          {
+  47   1              time0init();
+  48   1              biaohaoinit();
+  49   1              while(1)
+  50   1              {
+  51   2                      if(k1==0)          //判断按键是否按下
+  52   2                      {
+  53   3                              delay(1000);  //消抖
+  54   3                              if(k1==0)
+  55   3                              {
+C51 COMPILER V9.01   MAIN                                                                  11/21/2019 09:51:08 PAGE 2   
+
+  56   4                                      TR0=1;  //打开定时器0
+  57   4                                      while(!stop);
+  58   4                              }
+  59   3                      }       
+  60   2              }       
+  61   1      }
+  62          void time0() interrupt 1
+  63          {
+  64   1              n++;
+  65   1              TH0=0Xff;
+  66   1              TL0=0X06; //250us
+  67   1              if(n==2000)             //定时0.5s  叮响0.5秒，咚响0.5秒
+  68   1              {
+  69   2                      n=0;
+  70   2                      if(flag==0)
+  71   2                      {
+  72   3                              flag=~flag;
+  73   3                      }
+  74   2                      else
+  75   2                      {
+  76   3                              flag=0;
+  77   3                              stop=1;
+  78   3                              TR0=0;    //关闭定时器0
+  79   3                      }
+  80   2              }
+  81   1              if(flag==0)
+  82   1              {                                          //通过改变定时计数时间可以改变门铃的声音
+  83   2                      ding++;                   //叮
+  84   2                      if(ding==1)
+  85   2                      {
+  86   3                              ding=0;
+  87   3                              beep=~beep;
+  88   3                      }
+  89   2              }
+  90   1              else
+  91   1              {
+  92   2                      dong++;
+  93   2                      if(dong==2)               //咚
+  94   2                      {
+  95   3                              dong=0;
+  96   3                              beep=~beep;
+  97   3                      }       
+  98   2              }
+  99   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    152    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      6    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

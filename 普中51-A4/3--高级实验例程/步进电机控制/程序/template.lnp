@@ -1,0 +1,6 @@
+"main.obj",
+"key.obj",
+"42Motor.obj",
+"XPT2046.obj" 
+TO "template" 
+RAMSIZE(256) 

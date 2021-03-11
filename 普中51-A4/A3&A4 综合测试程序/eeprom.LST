@@ -1,0 +1,187 @@
+C51 COMPILER V9.01   EEPROM                                                                09/20/2019 08:40:58 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE EEPROM
+OBJECT MODULE PLACED IN eeprom.OBJ
+COMPILER INVOKED BY: D:\YZ\KEILC51\C51\BIN\C51.EXE eeprom.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include "eeprom.h"
+   2          #include "smg.h"
+   3          #include "key.h"
+   4          #include "led.h"
+   5          
+   6          void Delay10us()
+   7          {
+   8   1              unsigned char a,b;
+   9   1              for(b=1;b>0;b--)
+  10   1                      for(a=2;a>0;a--);
+  11   1      
+  12   1      }
+  13          
+  14          void I2cStart()
+  15          {
+  16   1              SDA=1;
+  17   1              Delay10us();
+  18   1              SCL=1;
+  19   1              Delay10us();//建立时间是SDA保持时间>4.7us
+  20   1              SDA=0;
+  21   1              Delay10us();//保持时间是>4us
+  22   1              SCL=0;                  
+  23   1              Delay10us();            
+  24   1      }
+  25          
+  26          void I2cStop()
+  27          {
+  28   1              SDA=0;
+  29   1              Delay10us();
+  30   1              SCL=1;
+  31   1              Delay10us();//建立时间大于4.7us
+  32   1              SDA=1;
+  33   1              Delay10us();            
+  34   1      }
+  35          
+  36          unsigned char I2cSendByte(unsigned char dat)
+  37          {
+  38   1              unsigned char a=0,b=0;//最大255，一个机器周期为1us，最大延时255us。             
+  39   1              for(a=0;a<8;a++)//要发送8位，从最高位开始
+  40   1              {
+  41   2                      SDA=dat>>7;      //起始信号之后SCL=0，所以可以直接改变SDA信号
+  42   2                      dat=dat<<1;
+  43   2                      Delay10us();
+  44   2                      SCL=1;
+  45   2                      Delay10us();//建立时间>4.7us
+  46   2                      SCL=0;
+  47   2                      Delay10us();//时间大于4us               
+  48   2              }
+  49   1              SDA=1;
+  50   1              Delay10us();
+  51   1              SCL=1;
+  52   1              while(SDA)//等待应答，也就是等待从设备把SDA拉低
+  53   1              {
+  54   2                      b++;
+  55   2                      if(b>200)        //如果超过2000us没有应答发送失败，或者为非应答，表示接收结束
+C51 COMPILER V9.01   EEPROM                                                                09/20/2019 08:40:58 PAGE 2   
+
+  56   2                      {
+  57   3                              SCL=0;
+  58   3                              Delay10us();
+  59   3                              return 0;
+  60   3                      }
+  61   2              }
+  62   1              SCL=0;
+  63   1              Delay10us();
+  64   1              return 1;               
+  65   1      }
+  66          
+  67          unsigned char I2cReadByte()
+  68          {
+  69   1              unsigned char a=0,dat=0;
+  70   1              SDA=1;                  //起始和发送一个字节之后SCL都是0
+  71   1              Delay10us();
+  72   1              for(a=0;a<8;a++)//接收8个字节
+  73   1              {
+  74   2                      SCL=1;
+  75   2                      Delay10us();
+  76   2                      dat<<=1;
+  77   2                      dat|=SDA;
+  78   2                      Delay10us();
+  79   2                      SCL=0;
+  80   2                      Delay10us();
+  81   2              }
+  82   1              return dat;             
+  83   1      }
+  84          
+  85          void At24c02Write(unsigned char addr,unsigned char dat)
+  86          {
+  87   1              I2cStart();
+  88   1              I2cSendByte(0xa0);//发送写器件地址
+  89   1              I2cSendByte(addr);//发送要写入内存地址
+  90   1              I2cSendByte(dat);       //发送数据
+  91   1              I2cStop();
+  92   1      }
+  93          
+  94          unsigned char At24c02Read(unsigned char addr)
+  95          {
+  96   1              unsigned char num;
+  97   1              I2cStart();
+  98   1              I2cSendByte(0xa0); //发送写器件地址
+  99   1              I2cSendByte(addr); //发送要读取的地址
+ 100   1              I2cStart();
+ 101   1              I2cSendByte(0xa1); //发送读器件地址
+ 102   1              num=I2cReadByte(); //读取数据
+ 103   1              I2cStop();
+ 104   1              return num;     
+ 105   1      }
+ 106          
+ 107          u8 eeprom_num=0;
+ 108          
+ 109          void Keypros()
+ 110          {
+ 111   1              u8 key=0;
+ 112   1              key=KeyScan(0);
+ 113   1              
+ 114   1              if(key==KEY1)
+ 115   1              {
+ 116   2                      At24c02Write(1,eeprom_num);   //在地址1内写入数据num    
+ 117   2              }
+C51 COMPILER V9.01   EEPROM                                                                09/20/2019 08:40:58 PAGE 3   
+
+ 118   1              else if(key==KEY2)
+ 119   1              {
+ 120   2                      eeprom_num=0;            //数据清零     
+ 121   2              }       
+ 122   1              else if(key==KEY3)
+ 123   1              {
+ 124   2                      eeprom_num=At24c02Read(1);        //读取EEPROM地址1内的数据保存在num中  
+ 125   2              }
+ 126   1              else if(key==KEY4)
+ 127   1              {
+ 128   2                      eeprom_num++;      //数据加1
+ 129   2                      if(eeprom_num>255)eeprom_num=0;
+ 130   2              }
+ 131   1                      
+ 132   1      }
+ 133          
+ 134          void EEPROM_datapros()
+ 135          {
+ 136   1              DisPlayData[0]=smgduan[eeprom_num/1000];//千位
+ 137   1              DisPlayData[1]=smgduan[eeprom_num%1000/100];//百位
+ 138   1              DisPlayData[2]=smgduan[eeprom_num%1000%100/10];//个位
+ 139   1              DisPlayData[3]=smgduan[eeprom_num%1000%100%10]; 
+ 140   1              DisPlayData[4]=0;
+ 141   1              DisPlayData[5]=0;
+ 142   1              DisPlayData[6]=0;
+ 143   1              DisPlayData[7]=0;       
+ 144   1      }
+ 145          
+ 146          void EEPROM_Test(void)
+ 147          {
+ 148   1              EA=0;
+ 149   1              KEY_PORT=0xff;
+ 150   1              while(1)
+ 151   1              {
+ 152   2                      Keypros();       //按键处理函数
+ 153   2                      EEPROM_datapros();       //数据处理函数
+ 154   2                      DigDisplay();//数码管显示函数
+ 155   2                      if(KeyValue!=EEPROM_TEST)
+ 156   2                      {
+ 157   3                              return; 
+ 158   3                      }
+ 159   2              }
+ 160   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    395    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

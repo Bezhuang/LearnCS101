@@ -1,0 +1,166 @@
+C51 COMPILER V9.01   MAIN                                                                  04/11/2019 14:33:57 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          /*
+   2          实验说明：
+   3            
+   4          实验接线：
+   5            1，动态数码管模块-->单片机管脚
+   6            参考动态数码管显示实验接线（开发攻略内在对应的实验章节内实验现象有接线说明）
+   7            
+   8          实验现象：
+   9            数码管上显示秒表
+  10          */
+  11          
+  12          #include "reg52.h"       //此文件中定义了单片机的一些特殊功能寄存器
+  13          
+  14          typedef unsigned int u16;   //对数据类型进行声明定义
+  15          typedef unsigned char u8;
+  16          
+  17          sbit LSA=P2^2;
+  18          sbit LSB=P2^3;
+  19          sbit LSC=P2^4;
+  20          
+  21          u8 code smgduan[17]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,
+  22                    0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};//显示0~F的值
+  23          
+  24          u8 ssec,sec,min; //毫秒，秒，分
+  25          u8 DisplayData[8];
+  26          /*******************************************************************************
+  27          * 函 数 名         : delay
+  28          * 函数功能       : 延时函数，i=1时，大约延时10us
+  29          *******************************************************************************/
+  30          void delay(u16 i)
+  31          {
+  32   1        while(i--); 
+  33   1      }
+  34          
+  35          /*******************************************************************************
+  36          * 函 数 名         : Timer0Init
+  37          * 函数功能       : 定时器0初始化
+  38          * 输    入         : 无
+  39          * 输    出         : 无
+  40          *******************************************************************************/
+  41          void Timer0Init()
+  42          {
+  43   1        TMOD|=0X01;//选择为定时器0模式，工作方式1，仅用TR0打开启动。
+  44   1      
+  45   1        TH0=0Xd8; //给定时器赋初值，定时10ms
+  46   1        TL0=0Xf0; 
+  47   1        ET0=1;//打开定时器0中断允许
+  48   1        EA=1;//打开总中断
+  49   1        TR0=1;//打开定时器      
+  50   1      }
+  51          
+  52          
+  53          /*******************************************************************************
+  54          * 函 数 名         : DigDisplay
+  55          * 函数功能       : 数码管动态扫描函数，循环扫描8个数码管显示
+C51 COMPILER V9.01   MAIN                                                                  04/11/2019 14:33:57 PAGE 2   
+
+  56          *******************************************************************************/
+  57          void DigDisplay()
+  58          {
+  59   1        u8 i;
+  60   1        for(i=0;i<8;i++)
+  61   1        {
+  62   2          switch(i)  //位选，选择点亮的数码管，
+  63   2          {
+  64   3            case(0):
+  65   3              LSA=1;LSB=1;LSC=1; break;//显示第7位
+  66   3            case(1):
+  67   3              LSA=0;LSB=1;LSC=1; break;//显示第6位
+  68   3            case(2):
+  69   3              LSA=1;LSB=0;LSC=1; break;//显示第5位
+  70   3            case(3):
+  71   3              LSA=0;LSB=0;LSC=1; break;//显示第4位
+  72   3            case(4):
+  73   3              LSA=1;LSB=1;LSC=0; break;//显示第3位 
+  74   3            case(5):
+  75   3              LSA=0;LSB=1;LSC=0; break;//显示第2位 
+  76   3            case(6):
+  77   3              LSA=1;LSB=0;LSC=0; break;//显示第1位 
+  78   3            case(7):
+  79   3              LSA=0;LSB=0;LSC=0; break;//显示第0位  
+  80   3          }
+  81   2          P0=DisplayData[i];//发送段码
+  82   2          delay(100); //间隔一段时间扫描  
+  83   2          P0=0x00;//消隐
+  84   2        }
+  85   1      }
+  86          
+  87          void datapros()
+  88          {
+  89   1        DisplayData[0]=smgduan[min/10];
+  90   1        DisplayData[1]=smgduan[min%10];
+  91   1        DisplayData[2]=0x40;  
+  92   1        DisplayData[3]=smgduan[sec/10];
+  93   1        DisplayData[4]=smgduan[sec%10];
+  94   1        DisplayData[5]=0x40;
+  95   1        DisplayData[6]=smgduan[ssec/10];
+  96   1        DisplayData[7]=smgduan[ssec%10];
+  97   1      }
+  98          /*******************************************************************************
+  99          * 函 数 名       : main
+ 100          * 函数功能     : 主函数
+ 101          * 输    入       : 无
+ 102          * 输    出       : 无
+ 103          *******************************************************************************/
+ 104          void main()
+ 105          { 
+ 106   1        Timer0Init();  //定时器0初始化
+ 107   1        while(1)
+ 108   1        {
+ 109   2          datapros();
+ 110   2          DigDisplay(); 
+ 111   2        }   
+ 112   1      }
+ 113          
+ 114          /*******************************************************************************
+ 115          * 函 数 名         : void Timer0() interrupt 1
+ 116          * 函数功能       : 定时器0中断函数
+ 117          * 输    入         : 无
+C51 COMPILER V9.01   MAIN                                                                  04/11/2019 14:33:57 PAGE 3   
+
+ 118          * 输    出         : 无
+ 119          *******************************************************************************/
+ 120          void Timer0() interrupt 1
+ 121          {
+ 122   1        TH0=0Xd8; //给定时器赋初值，定时10ms
+ 123   1        TL0=0Xf0;
+ 124   1        ssec++;
+ 125   1        if(ssec>=100)  //1s
+ 126   1        {
+ 127   2          ssec=0;
+ 128   2          sec++;
+ 129   2          if(sec>=60)
+ 130   2          {
+ 131   3            sec=0;
+ 132   3            min++;
+ 133   3            if(min>=60)
+ 134   3            {
+ 135   4              min=0;
+ 136   4            }
+ 137   3          } 
+ 138   2        } 
+ 139   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    266    ----
+   CONSTANT SIZE    =     17    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     11    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

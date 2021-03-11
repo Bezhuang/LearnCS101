@@ -1,0 +1,190 @@
+C51 COMPILER V9.01   MAIN                                                                  04/12/2019 10:29:22 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          /*
+   2          实验说明：
+   3            
+   4          实验接线：
+   5            动态数码管模块-->单片机管脚
+   6            参考动态数码管实验接线（开发攻略内在对应的实验章节内实验现象有接线说明）
+   7            矩阵按键模块-->单片机管脚
+   8            参考矩阵按键实验接线（开发攻略内在对应的实验章节内实验现象有接线说明）
+   9          实验现象：
+  10            按下矩阵按键在数码管上逐个显示对应的键值，键值如下：
+  11            S1-S4：0-3
+  12            S4-S8：4-7
+  13            S9-S12：8-B
+  14            S13-S16：C-F
+  15          */
+  16          #include<reg51.h>
+  17          
+  18          #define GPIO_DIG P0
+  19          #define GPIO_KEY P1
+  20          
+  21          sbit LSA=P2^2;
+  22          sbit LSB=P2^3;
+  23          sbit LSC=P2^4;
+  24          
+  25          unsigned char code DIG_CODE[17]={
+  26          0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,
+  27          0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};
+  28          //0、1、2、3、4、5、6、7、8、9、A、b、C、d、E、F的显示码
+  29          unsigned char KeyValue;
+  30          //用来存放读取到的键值
+  31          unsigned char KeyState; //记录按键的状态，0没有，1有
+  32          unsigned char DisplayData[8];
+  33          //用来存放要显示的8位数的值
+  34          void Delay10ms();   //延时10ms
+  35          void KeyDown();    //检测按键函数
+  36          void DigDisplay(); //动态显示函数
+  37          /*******************************************************************************
+  38          * 函 数 名         : main
+  39          * 函数功能       : 主函数
+  40          * 输    入         : 无
+  41          * 输    出         : 无
+  42          *******************************************************************************/
+  43          void main(void)
+  44          {
+  45   1        KeyState=0;
+  46   1        while(1)
+  47   1        {
+  48   2          KeyDown();
+  49   2          if(KeyState==1)
+  50   2          {
+  51   3            DisplayData[7]=DisplayData[6];
+  52   3            DisplayData[6]=DisplayData[5];
+  53   3            DisplayData[5]=DisplayData[4];
+  54   3            DisplayData[4]=DisplayData[3];
+  55   3            DisplayData[3]=DisplayData[2];
+C51 COMPILER V9.01   MAIN                                                                  04/12/2019 10:29:22 PAGE 2   
+
+  56   3            DisplayData[2]=DisplayData[1];
+  57   3            DisplayData[1]=DisplayData[0];
+  58   3            DisplayData[0]=DIG_CODE[KeyValue];
+  59   3            
+  60   3            KeyState=0;
+  61   3          }
+  62   2          DigDisplay();
+  63   2        }       
+  64   1      }
+  65          /*******************************************************************************
+  66          * 函 数 名         : DigDisplay
+  67          * 函数功能       : 使用数码管显示
+  68          * 输    入         : 无
+  69          * 输    出         : 无
+  70          *******************************************************************************/
+  71          void DigDisplay()
+  72          {
+  73   1        unsigned char i;
+  74   1        unsigned int j;
+  75   1        for(i=0;i<8;i++)
+  76   1        {
+  77   2          switch(i)  //位选，选择点亮的数码管，
+  78   2          {
+  79   3            case(0):
+  80   3              LSA=1;LSB=1;LSC=1; break;//显示第7位
+  81   3            case(1):
+  82   3              LSA=0;LSB=1;LSC=1; break;//显示第6位
+  83   3            case(2):
+  84   3              LSA=1;LSB=0;LSC=1; break;//显示第5位
+  85   3            case(3):
+  86   3              LSA=0;LSB=0;LSC=1; break;//显示第4位
+  87   3            case(4):
+  88   3              LSA=1;LSB=1;LSC=0; break;//显示第3位 
+  89   3            case(5):
+  90   3              LSA=0;LSB=1;LSC=0; break;//显示第2位 
+  91   3            case(6):
+  92   3              LSA=1;LSB=0;LSC=0; break;//显示第1位 
+  93   3            case(7):
+  94   3              LSA=0;LSB=0;LSC=0; break;//显示第0位  
+  95   3          }
+  96   2          GPIO_DIG=DisplayData[i];//发送段码
+  97   2          j=10;            //扫描间隔时间设定
+  98   2          while(j--); 
+  99   2          GPIO_DIG=0x00;//消隐
+ 100   2        }
+ 101   1      }
+ 102          /*******************************************************************************
+ 103          * 函 数 名         : KeyDown
+ 104          * 函数功能       : 检测有按键按下并读取键值
+ 105          * 输    入         : 无
+ 106          * 输    出         : 无
+ 107          *******************************************************************************/
+ 108          void KeyDown(void)
+ 109          {
+ 110   1        unsigned int a=0;
+ 111   1        GPIO_KEY=0x0f;
+ 112   1        if(GPIO_KEY!=0x0f)
+ 113   1        {
+ 114   2          Delay10ms();
+ 115   2          a++;  
+ 116   2          a=0;
+ 117   2          if(GPIO_KEY!=0x0f)
+C51 COMPILER V9.01   MAIN                                                                  04/12/2019 10:29:22 PAGE 3   
+
+ 118   2          {
+ 119   3            KeyState=1;//有按键按下
+ 120   3            //测试列
+ 121   3            GPIO_KEY=0X0F;
+ 122   3      //      Delay10ms();
+ 123   3            switch(GPIO_KEY)
+ 124   3            {
+ 125   4              case(0X07): KeyValue=0;break;
+ 126   4              case(0X0b): KeyValue=1;break;
+ 127   4              case(0X0d): KeyValue=2;break;
+ 128   4              case(0X0e): KeyValue=3;break;
+ 129   4      //        default:  KeyValue=17;  //检测出错回复17意思是把数码管全灭掉。
+ 130   4            }
+ 131   3            //测试行
+ 132   3            GPIO_KEY=0XF0;
+ 133   3            Delay10ms();
+ 134   3            switch(GPIO_KEY)
+ 135   3            {
+ 136   4              case(0X70): KeyValue=KeyValue;break;
+ 137   4              case(0Xb0): KeyValue=KeyValue+4;break;
+ 138   4              case(0Xd0): KeyValue=KeyValue+8;break;
+ 139   4              case(0Xe0): KeyValue=KeyValue+12;break;
+ 140   4      //        default:  KeyValue=17;
+ 141   4            }
+ 142   3            while((a<500)&&(GPIO_KEY!=0xf0))   //按键松手检测
+ 143   3            {
+ 144   4              Delay10ms();
+ 145   4              a++;
+ 146   4            }
+ 147   3            a=0;
+ 148   3          }
+ 149   2        }
+ 150   1      }
+ 151          /*******************************************************************************
+ 152          * 函 数 名         : Delay10ms
+ 153          * 函数功能       : 延时函数，延时10ms
+ 154          * 输    入         : 无
+ 155          * 输    出         : 无
+ 156          *******************************************************************************/
+ 157          void Delay10ms(void)   //误差 0us
+ 158          {
+ 159   1          unsigned char a,b,c;
+ 160   1          for(c=1;c>0;c--)
+ 161   1              for(b=38;b>0;b--)
+ 162   1                  for(a=130;a>0;a--);
+ 163   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    338    ----
+   CONSTANT SIZE    =     17    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     10       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

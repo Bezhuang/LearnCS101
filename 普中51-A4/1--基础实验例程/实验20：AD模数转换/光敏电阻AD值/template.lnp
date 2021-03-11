@@ -1,0 +1,4 @@
+"main.obj",
+"XPT2046.obj" 
+TO "template" 
+RAMSIZE(256) 

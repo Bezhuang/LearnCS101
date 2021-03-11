@@ -1,0 +1,162 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        11/21/2019  09:51:43  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL4\C51\BIN\BL51.EXE beep.obj TO beep
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  beep.obj (BEEP)
+  D:\KEIL4\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\KEIL4\C51\LIB\C51S.LIB (?C?ULCMP)
+
+
+LINK MAP OF MODULE:  beep (BEEP)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0008H     UNIT         _DATA_GROUP_
+            DATA    0010H     0003H     UNIT         ?DT?BEEP
+            IDATA   0013H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+                    0003H     0008H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     017FH     UNIT         ?CO?BEEP
+            CODE    018DH     0048H     UNIT         ?PR?_DELAY?BEEP
+            CODE    01D5H     0047H     UNIT         ?PR?MAIN?BEEP
+            CODE    021CH     0011H     UNIT         ?C?LIB_CODE
+            CODE    022DH     000DH     UNIT         ?PR?T0INT?BEEP
+            CODE    023AH     000DH     UNIT         ?PR?SONG?BEEP
+            CODE    0247H     000CH     UNIT         ?C_C51STARTUP
+
+
+
+OVERLAY MAP OF MODULE:   beep (BEEP)
+
+
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?C_C51STARTUP                  -----    -----
+  +--> ?PR?MAIN?BEEP
+
+?PR?MAIN?BEEP                  0008H    0002H
+  +--> ?CO?BEEP
+  +--> ?PR?SONG?BEEP
+
+?PR?SONG?BEEP                  -----    -----
+  +--> ?PR?_DELAY?BEEP
+
+?PR?_DELAY?BEEP                000AH    0006H
+
+
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/21/2019  09:51:43  PAGE 2
+
+
+
+SYMBOL TABLE OF MODULE:  beep (BEEP)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        BEEP
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:00A0H         PUBLIC        P2
+  B:00A8H.7       PUBLIC        EA
+  D:00A8H         PUBLIC        IE
+  C:018DH         PUBLIC        _delay
+  D:00B8H         PUBLIC        IP
+  C:0046H         PUBLIC        sszymmh
+  D:00D8H         PUBLIC        CCON
+  C:01D5H         PUBLIC        main
+  D:0010H         PUBLIC        time
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  C:023AH         PUBLIC        song
+  D:0011H         PUBLIC        timer0h
+  D:0012H         PUBLIC        timer0l
+  B:00A8H.1       PUBLIC        ET0
+  D:008CH         PUBLIC        TH0
+  D:008AH         PUBLIC        TL0
+  B:0088H.4       PUBLIC        TR0
+  C:00ACH         PUBLIC        song1
+  B:00A0H.5       PUBLIC        speaker
+  C:022DH         PUBLIC        t0int
+  C:000EH         PUBLIC        FREQH
+  D:00D0H         PUBLIC        PSW
+  C:002AH         PUBLIC        FREQL
+  -------         PROC          T0INT
+  C:022DH         LINE#         65
+  C:022DH         LINE#         67
+  C:022FH         LINE#         68
+  C:0231H         LINE#         69
+  C:0234H         LINE#         70
+  C:0237H         LINE#         71
+  C:0239H         LINE#         72
+  -------         ENDPROC       T0INT
+  -------         PROC          _DELAY
+  D:000AH         SYMBOL        t
+  -------         DO            
+  D:000BH         SYMBOL        t1
+  D:000CH         SYMBOL        t2
+  -------         ENDDO         
+  C:018DH         LINE#         74
+  C:018FH         LINE#         75
+  C:018FH         LINE#         78
+  C:0199H         LINE#         79
+  C:01D2H         LINE#         80
+  C:01D4H         LINE#         81
+  -------         ENDPROC       _DELAY
+  -------         PROC          SONG
+  C:023AH         LINE#         83
+BL51 BANKED LINKER/LOCATER V6.22                                                      11/21/2019  09:51:43  PAGE 3
+
+
+  C:023AH         LINE#         84
+  C:023AH         LINE#         85
+  C:023DH         LINE#         86
+  C:0240H         LINE#         87
+  C:0242H         LINE#         88
+  -------         ENDPROC       SONG
+  -------         PROC          MAIN
+  -------         DO            
+  D:0008H         SYMBOL        k
+  D:0009H         SYMBOL        i
+  -------         ENDDO         
+  C:01D5H         LINE#         91
+  C:01D5H         LINE#         92
+  C:01D5H         LINE#         94
+  C:01D8H         LINE#         95
+  C:01DAH         LINE#         96
+  C:01DCH         LINE#         97
+  C:01DCH         LINE#         98
+  C:01DCH         LINE#         99
+  C:01DFH         LINE#         100
+  C:01E2H         LINE#         101
+  C:01E6H         LINE#         102
+  C:01E6H         LINE#         103
+  C:01FBH         LINE#         105
+  C:0201H         LINE#         106
+  C:0209H         LINE#         107
+  C:0211H         LINE#         108
+  C:0217H         LINE#         109
+  C:021AH         LINE#         110
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        BEEP
+
+  -------         MODULE        ?C?ULCMP
+  C:021CH         PUBLIC        ?C?ULCMP
+  -------         ENDMOD        ?C?ULCMP
+
+Program Size: data=20.0 xdata=0 code=587
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

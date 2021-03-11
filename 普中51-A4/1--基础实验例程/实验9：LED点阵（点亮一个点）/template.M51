@@ -1,0 +1,111 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        04/10/2019  11:04:26  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL_V5\C51\BIN\BL51.EXE main.obj TO template RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  main.obj (MAIN)
+  C:\KEIL_V5\C51\LIB\C51S.LIB (?C_STARTUP)
+
+
+LINK MAP OF MODULE:  template (MAIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            IDATA   0008H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0041H     UNIT         ?PR?_HC595SENDBYTE?MAIN
+            CODE    0044H     000CH     UNIT         ?C_C51STARTUP
+            CODE    0050H     000BH     UNIT         ?PR?MAIN?MAIN
+
+
+
+OVERLAY MAP OF MODULE:   template (MAIN)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?MAIN
+
+?PR?MAIN?MAIN
+  +--> ?PR?_HC595SENDBYTE?MAIN
+
+
+
+SYMBOL TABLE OF MODULE:  template (MAIN)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  B:00B0H.6       PUBLIC        SRCLK
+  D:00B0H         PUBLIC        P3
+  C:0050H         PUBLIC        main
+  B:00B0H.5       PUBLIC        RCLK
+  B:0080H.7       PUBLIC        LED
+  B:00B0H.4       PUBLIC        SER
+BL51 BANKED LINKER/LOCATER V6.22                                                      04/10/2019  11:04:26  PAGE 2
+
+
+  C:0003H         PUBLIC        _Hc595SendByte
+  -------         PROC          _HC595SENDBYTE
+  D:0007H         SYMBOL        dat1
+  D:0005H         SYMBOL        dat2
+  -------         DO            
+  D:0006H         SYMBOL        a
+  -------         ENDDO         
+  C:0003H         LINE#         30
+  C:0003H         LINE#         31
+  C:0003H         LINE#         34
+  C:0005H         LINE#         35
+  C:0007H         LINE#         37
+  C:0009H         LINE#         38
+  C:0009H         LINE#         39
+  C:0014H         LINE#         40
+  C:0018H         LINE#         42
+  C:001AH         LINE#         43
+  C:001BH         LINE#         44
+  C:001CH         LINE#         45
+  C:001EH         LINE#         46
+  C:0022H         LINE#         48
+  C:0024H         LINE#         49
+  C:0024H         LINE#         50
+  C:002FH         LINE#         51
+  C:0033H         LINE#         53
+  C:0035H         LINE#         54
+  C:0036H         LINE#         55
+  C:0037H         LINE#         56
+  C:0039H         LINE#         57
+  C:003DH         LINE#         59
+  C:003FH         LINE#         60
+  C:0040H         LINE#         61
+  C:0041H         LINE#         62
+  C:0043H         LINE#         63
+  -------         ENDPROC       _HC595SENDBYTE
+  -------         PROC          MAIN
+  C:0050H         LINE#         72
+  C:0050H         LINE#         73
+  C:0052H         LINE#         75
+  C:0052H         LINE#         76
+  C:0052H         LINE#         77
+  C:0059H         LINE#         78
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        MAIN
+
+Program Size: data=9.0 xdata=0 code=91
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,288 @@
+C51 COMPILER V9.01   MAIN                                                                  04/12/2019 10:08:27 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          /*
+   2          实验说明：
+   3            
+   4          实验接线：
+   5            1，动态数码管模块-->单片机管脚
+   6            参考动态数码管显示实验接线（开发攻略内在对应的实验章节内实验现象有接线说明）
+   7            2，独立按键模块-->单片机管脚 
+   8            K1-->P10
+   9            K2-->P11
+  10            K3-->P12
+  11            K4-->P13
+  12            
+  13          实验现象：
+  14            按K4键进入数字设置，按K1和K3键对闪烁的数字进行加和减，按K2键进行数码管移位设置
+  15            再次按下K4键退出设置。
+  16          */
+  17          
+  18          
+  19          #include "reg52.h"       //此文件中定义了单片机的一些特殊功能寄存器
+  20          
+  21          typedef unsigned int u16;   //对数据类型进行声明定义
+  22          typedef unsigned char u8;
+  23          
+  24          sbit LSA=P2^2;
+  25          sbit LSB=P2^3;
+  26          sbit LSC=P2^4;
+  27          
+  28          sbit k1=P3^0;
+  29          sbit k2=P3^1;
+  30          sbit k3=P3^2;
+  31          sbit k4=P3^3;  //定义按键端口
+  32          
+  33          #define KEY1 1
+  34          #define KEY2 2
+  35          #define KEY3 3
+  36          #define KEY4 4
+  37          
+  38          u8 code smgduan[17]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,
+  39                    0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};//显示0~F的值
+  40          
+  41          u8 DisplayData[8];
+  42          char datnum1=0,datnum2=0,datnum3=0,datnum4=0;
+  43          u8 setflag=0;
+  44          u8 wei_change=0;
+  45          
+  46          /*******************************************************************************
+  47          * 函 数 名         : delay
+  48          * 函数功能       : 延时函数，i=1时，大约延时10us
+  49          *******************************************************************************/
+  50          void delay(u16 i)
+  51          {
+  52   1        while(i--); 
+  53   1      }
+  54          
+  55          /*******************************************************************************
+C51 COMPILER V9.01   MAIN                                                                  04/12/2019 10:08:27 PAGE 2   
+
+  56          * 函 数 名         : Timer0Init
+  57          * 函数功能       : 定时器0初始化
+  58          * 输    入         : 无
+  59          * 输    出         : 无
+  60          *******************************************************************************/
+  61          void Timer0Init()
+  62          {
+  63   1        TMOD|=0X01;//选择为定时器0模式，工作方式1，仅用TR0打开启动。
+  64   1      
+  65   1        TH0=0Xd8; //给定时器赋初值，定时10ms
+  66   1        TL0=0Xf0; 
+  67   1        ET0=1;//打开定时器0中断允许
+  68   1        EA=1;//打开总中断
+  69   1        //TR0=1;//打开定时器      
+  70   1      }
+  71          
+  72          /*******************************************************************************
+  73          * 函 数 名         : DigDisplay
+  74          * 函数功能       : 数码管动态扫描函数，循环扫描8个数码管显示
+  75          *******************************************************************************/
+  76          void DigDisplay()
+  77          {
+  78   1        u8 i;
+  79   1        for(i=0;i<8;i++)
+  80   1        {
+  81   2          switch(i)  //位选，选择点亮的数码管，
+  82   2          {
+  83   3            case(0):
+  84   3              LSA=1;LSB=1;LSC=1; break;//显示第7位
+  85   3            case(1):
+  86   3              LSA=0;LSB=1;LSC=1; break;//显示第6位
+  87   3            case(2):
+  88   3              LSA=1;LSB=0;LSC=1; break;//显示第5位
+  89   3            case(3):
+  90   3              LSA=0;LSB=0;LSC=1; break;//显示第4位
+  91   3            case(4):
+  92   3              LSA=1;LSB=1;LSC=0; break;//显示第3位 
+  93   3            case(5):
+  94   3              LSA=0;LSB=1;LSC=0; break;//显示第2位 
+  95   3            case(6):
+  96   3              LSA=1;LSB=0;LSC=0; break;//显示第1位 
+  97   3            case(7):
+  98   3              LSA=0;LSB=0;LSC=0; break;//显示第0位  
+  99   3          }
+ 100   2          P0=DisplayData[i];//发送段码
+ 101   2          delay(100); //间隔一段时间扫描  
+ 102   2          P0=0x00;//消隐
+ 103   2        }
+ 104   1      }
+ 105          
+ 106          //mode=0 单次   1：连续
+ 107          u8 KeyScan(u8 mode)
+ 108          {
+ 109   1        static u8 keyen=1;
+ 110   1        if(mode==1)
+ 111   1        {
+ 112   2          keyen=1;
+ 113   2        }
+ 114   1        if(keyen==1&&(k1==0||k2==0||k3==0||k4==0))
+ 115   1        {
+ 116   2          delay(1000);  //消抖处理
+ 117   2          keyen=0;
+C51 COMPILER V9.01   MAIN                                                                  04/12/2019 10:08:27 PAGE 3   
+
+ 118   2          if(k1==0)return KEY1;
+ 119   2          else if(k2==0)return KEY2;
+ 120   2          else if(k3==0)return KEY3;
+ 121   2          else if(k4==0)return KEY4;        
+ 122   2        }
+ 123   1        else if(k1==1&&k2==1&&k3==1&&k4==1)
+ 124   1        {
+ 125   2          keyen=1;
+ 126   2        }
+ 127   1        return 0; 
+ 128   1      }
+ 129          
+ 130          void datapros()
+ 131          {
+ 132   1        u8 key;
+ 133   1        key=KeyScan(0);
+ 134   1        
+ 135   1        if(key==KEY4)    //设置
+ 136   1        {
+ 137   2          setflag++;
+ 138   2          TR0=1;     //开启定时器
+ 139   2          if(setflag==2)
+ 140   2          {
+ 141   3            TR0=0;    //关闭定时器
+ 142   3            setflag=0;  
+ 143   3          }
+ 144   2        }
+ 145   1      
+ 146   1        if(setflag==0)   //默认/退出设置显示
+ 147   1        {
+ 148   2          DisplayData[0]=smgduan[datnum4];
+ 149   2          DisplayData[1]=smgduan[datnum3];
+ 150   2          DisplayData[2]=smgduan[datnum2];
+ 151   2          DisplayData[3]=smgduan[datnum1];
+ 152   2        }
+ 153   1        else    //进入设置  数码管选中闪烁
+ 154   1        {
+ 155   2          if(key==KEY2)     //数据位数移动变化
+ 156   2          {
+ 157   3            wei_change++;
+ 158   3            if(wei_change>3)wei_change=0;
+ 159   3            DisplayData[0]=smgduan[datnum4];
+ 160   3            DisplayData[1]=smgduan[datnum3];
+ 161   3            DisplayData[2]=smgduan[datnum2];
+ 162   3            DisplayData[3]=smgduan[datnum1];  
+ 163   3          }
+ 164   2      
+ 165   2          else if(key==KEY1)   //数据加
+ 166   2          {
+ 167   3            switch(wei_change)
+ 168   3            {
+ 169   4              case 0:  datnum1++;
+ 170   4                  if(datnum1>9)datnum1=0;
+ 171   4                  break;
+ 172   4              case 1:  datnum2++;
+ 173   4                  if(datnum2>9)datnum2=0;
+ 174   4                  break;
+ 175   4              case 2:  datnum3++;
+ 176   4                  if(datnum3>9)datnum3=0;
+ 177   4                  break;
+ 178   4              case 3:  datnum4++;
+ 179   4                  if(datnum4>9)datnum4=0;
+C51 COMPILER V9.01   MAIN                                                                  04/12/2019 10:08:27 PAGE 4   
+
+ 180   4                  break;
+ 181   4      
+ 182   4            } 
+ 183   3          }
+ 184   2          else if(key==KEY3)   //数据减
+ 185   2          {
+ 186   3            switch(wei_change)
+ 187   3            {
+ 188   4              case 0:  datnum1--;
+ 189   4                  if(datnum1<=0)datnum1=9;    
+ 190   4                  break;
+ 191   4              case 1:  datnum2--;
+ 192   4                  if(datnum2<=0)datnum2=9;
+ 193   4                  break;
+ 194   4              case 2:  datnum3--;
+ 195   4                  if(datnum3<=0)datnum3=9;
+ 196   4                  break;
+ 197   4              case 3:  datnum4--;
+ 198   4                  if(datnum4<=0)datnum4=9;
+ 199   4                  break;
+ 200   4      
+ 201   4            } 
+ 202   3          }
+ 203   2            
+ 204   2        }
+ 205   1        
+ 206   1      }
+ 207          /*******************************************************************************
+ 208          * 函 数 名       : main
+ 209          * 函数功能     : 主函数
+ 210          * 输    入       : 无
+ 211          * 输    出       : 无
+ 212          *******************************************************************************/
+ 213          void main()
+ 214          { 
+ 215   1        Timer0Init();
+ 216   1        while(1)
+ 217   1        { 
+ 218   2          datapros();
+ 219   2          DigDisplay(); 
+ 220   2        }   
+ 221   1      }
+ 222          
+ 223          /*******************************************************************************
+ 224          * 函 数 名         : void Timer0() interrupt 1
+ 225          * 函数功能       : 定时器0中断函数
+ 226          * 输    入         : 无
+ 227          * 输    出         : 无
+ 228          *******************************************************************************/
+ 229          void Timer0() interrupt 1
+ 230          {
+ 231   1        static u8 i;
+ 232   1        TH0=0Xd8; //给定时器赋初值，定时10ms
+ 233   1        TL0=0Xf0;
+ 234   1        i++;
+ 235   1        if(i==50)   //500ms
+ 236   1        {
+ 237   2          switch(wei_change)
+ 238   2          {
+ 239   3            case 0: DisplayData[3]=0x00;break;
+ 240   3            case 1: DisplayData[2]=0x00;break;
+ 241   3            case 2: DisplayData[1]=0x00;break;
+C51 COMPILER V9.01   MAIN                                                                  04/12/2019 10:08:27 PAGE 5   
+
+ 242   3            case 3: DisplayData[0]=0x00;break;
+ 243   3          } 
+ 244   2        }
+ 245   1        if(i==100)     //1s
+ 246   1        {
+ 247   2          i=0;
+ 248   2          switch(wei_change)
+ 249   2          {
+ 250   3            case 0: DisplayData[3]=smgduan[datnum1];break;
+ 251   3            case 1: DisplayData[2]=smgduan[datnum2];break;
+ 252   3            case 2: DisplayData[1]=smgduan[datnum3];break;
+ 253   3            case 3: DisplayData[0]=smgduan[datnum4];break;
+ 254   3          }     
+ 255   2        }
+ 256   1      }
+ 257          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    704    ----
+   CONSTANT SIZE    =     17    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     16    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

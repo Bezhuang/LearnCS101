@@ -1,0 +1,135 @@
+C51 COMPILER V9.01   HWJS                                                                  09/20/2019 08:40:59 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE HWJS
+OBJECT MODULE PLACED IN hwjs.OBJ
+COMPILER INVOKED BY: D:\YZ\KEILC51\C51\BIN\C51.EXE hwjs.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include "hwjs.h"
+   2          #include "smg.h"
+   3          
+   4          
+   5          u8 IrValue[6];
+   6          u8 IrTime;
+   7          
+   8          
+   9          void IrInit()
+  10          {
+  11   1              IT0=1;//下降沿触发
+  12   1              EX0=1;//打开中断0允许
+  13   1              EA=1;   //打开总中断
+  14   1      
+  15   1              IRIN=1;//初始化端口
+  16   1      }
+  17          
+  18          void ReadIr() interrupt 0
+  19          {
+  20   1              u8 j,k;
+  21   1              u16 err;
+  22   1              IrTime=0;                                        
+  23   1              delay(700);     //7ms
+  24   1      
+  25   1              if(IRIN==0)             //确认是否真的接收到正确的信号
+  26   1              {        
+  27   2                      err=1000;                               //1000*10us=10ms,超过说明接收到错误的信号
+  28   2                      /*当两个条件都为真是循环，如果有一个条件为假的时候跳出循环，免得程序出错的时
+  29   2                      侯，程序死在这里*/      
+  30   2                      while((IRIN==0)&&(err>0))       //等待前面9ms的低电平过去               
+  31   2                      {                       
+  32   3                              delay(1);
+  33   3                              err--;
+  34   3                      } 
+  35   2                      if(IRIN==1)                     //如果正确等到9ms低电平
+  36   2                      {
+  37   3                              err=500;
+  38   3                              while((IRIN==1)&&(err>0))                //等待4.5ms的起始高电平过去
+  39   3                              {
+  40   4                                      delay(1);
+  41   4                                      err--;
+  42   4                              }
+  43   3                              for(k=0;k<4;k++)                //共有4组数据
+  44   3                              {                               
+  45   4                                      for(j=0;j<8;j++)        //接收一组数据
+  46   4                                      {
+  47   5      
+  48   5                                              err=60;         
+  49   5                                              while((IRIN==0)&&(err>0))//等待信号前面的560us低电平过去
+  50   5                                              {
+  51   6                                                      delay(1);
+  52   6                                                      err--;
+  53   6                                              }
+  54   5                                              err=500;
+  55   5                                              while((IRIN==1)&&(err>0))        //计算高电平的时间长度。
+C51 COMPILER V9.01   HWJS                                                                  09/20/2019 08:40:59 PAGE 2   
+
+  56   5                                              {
+  57   6                                                      delay(10);       //0.1ms
+  58   6                                                      IrTime++;
+  59   6                                                      err--;
+  60   6                                                      if(IrTime>30)
+  61   6                                                      {
+  62   7                                                              return;
+  63   7                                                      }
+  64   6                                              }
+  65   5                                              IrValue[k]>>=1;  //k表示第几组数据
+  66   5                                              if(IrTime>=8)                   //如果高电平出现大于565us，那么是1
+  67   5                                              {
+  68   6                                                      IrValue[k]|=0x80;
+  69   6                                              }
+  70   5                                              IrTime=0;               //用完时间要重新赋值                                                    
+  71   5                                      }
+  72   4                              }
+  73   3                      }
+  74   2                      if(IrValue[2]!=~IrValue[3])
+  75   2                      {
+  76   3                              return;
+  77   3                      }
+  78   2              }                       
+  79   1      }
+  80          
+  81          
+  82          void HWJSdatapros()
+  83          {
+  84   1              DisPlayData[0] = smgduan[IrValue[2]/16];
+  85   1              DisPlayData[1] = smgduan[IrValue[2]%16];
+  86   1              DisPlayData[2] = 0X76;
+  87   1              DisPlayData[3]=0;
+  88   1              DisPlayData[4]=0;
+  89   1              DisPlayData[5]=0;
+  90   1              DisPlayData[6]=0;
+  91   1              DisPlayData[7]=0;               
+  92   1      }
+  93          
+  94          void HWJS_Test(void)
+  95          {
+  96   1      
+  97   1              IrInit();
+  98   1              while(1)
+  99   1              {
+ 100   2                      HWJSdatapros();
+ 101   2                      DigDisplay();
+ 102   2                      if(KeyValue!=HWJS_TEST)
+ 103   2                      {
+ 104   3                              EX0=0;  
+ 105   3                              return; 
+ 106   3                      }
+ 107   2              }
+ 108   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    357    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      7       4
+   IDATA SIZE       =   ----    ----
+C51 COMPILER V9.01   HWJS                                                                  09/20/2019 08:40:59 PAGE 3   
+
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

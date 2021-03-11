@@ -1,0 +1,62 @@
+C51 COMPILER V9.01   MAIN                                                                  04/10/2019 10:47:47 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          /**************************************************************************************
+   2          实验现象：下载程序后"LED&交通灯模块"的D1指示灯闪烁
+   3          接线说明： 单片机-->LED&交通灯模块(具体接线图可见开发攻略对应实验的“实验现象”章节)
+   4                 P00-->D1 
+   5          注意事项：                                          
+   6          ***************************************************************************************/
+   7          
+   8          #include "reg52.h"       //此文件中定义了单片机的一些特殊功能寄存器
+   9          typedef unsigned int u16;   //对数据类型进行声明定义
+  10          typedef unsigned char u8;
+  11          
+  12          
+  13          sbit led=P2^0;     //将单片机的P0.0端口定义为led
+  14          
+  15          /*******************************************************************************
+  16          * 函 数 名         : delay
+  17          * 函数功能       : 延时函数，i=1时，大约延时10us
+  18          *******************************************************************************/
+  19          void delay(u16 i)
+  20          {
+  21   1        while(i--); 
+  22   1      }
+  23          
+  24          /*******************************************************************************
+  25          * 函 数 名       : main
+  26          * 函数功能     : 主函数
+  27          * 输    入       : 无
+  28          * 输    出       : 无
+  29          *******************************************************************************/
+  30          void main()
+  31          {
+  32   1        while(1)
+  33   1        {
+  34   2          led=0;
+  35   2          delay(50000); //大约延时450ms
+  36   2          led=1;
+  37   2          delay(50000); //大约延时450ms 
+  38   2        }   
+  39   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     31    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

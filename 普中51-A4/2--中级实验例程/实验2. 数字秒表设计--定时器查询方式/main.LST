@@ -1,0 +1,160 @@
+C51 COMPILER V9.01   MAIN                                                                  04/11/2019 14:35:46 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          /*
+   2          实验说明：
+   3            
+   4          实验接线：
+   5            1，动态数码管模块-->单片机管脚
+   6            参考动态数码管显示实验接线（开发攻略内在对应的实验章节内实验现象有接线说明）
+   7            
+   8          实验现象：
+   9            数码管上显示秒表
+  10          */
+  11          
+  12          
+  13          #include "reg52.h"       //此文件中定义了单片机的一些特殊功能寄存器
+  14          
+  15          typedef unsigned int u16;   //对数据类型进行声明定义
+  16          typedef unsigned char u8;
+  17          
+  18          sbit LSA=P2^2;
+  19          sbit LSB=P2^3;
+  20          sbit LSC=P2^4;
+  21          
+  22          u8 code smgduan[17]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,
+  23                    0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};//显示0~F的值
+  24          
+  25          u8 ssec,sec,min; //毫秒，秒，分
+  26          u8 DisplayData[8];
+  27          /*******************************************************************************
+  28          * 函 数 名         : delay
+  29          * 函数功能       : 延时函数，i=1时，大约延时10us
+  30          *******************************************************************************/
+  31          void delay(u16 i)
+  32          {
+  33   1        while(i--); 
+  34   1      }
+  35          
+  36          /*******************************************************************************
+  37          * 函 数 名         : Timer0Init
+  38          * 函数功能       : 定时器0初始化
+  39          * 输    入         : 无
+  40          * 输    出         : 无
+  41          *******************************************************************************/
+  42          void Timer0Init()
+  43          {
+  44   1        TMOD|=0X01;//选择为定时器0模式，工作方式1，仅用TR0打开启动。
+  45   1      
+  46   1        TH0=0Xd8; //给定时器赋初值，定时10ms
+  47   1        TL0=0Xf0; 
+  48   1        TR0=1;//打开定时器      
+  49   1      }
+  50          
+  51          
+  52          /*******************************************************************************
+  53          * 函 数 名         : DigDisplay
+  54          * 函数功能       : 数码管动态扫描函数，循环扫描8个数码管显示
+  55          *******************************************************************************/
+C51 COMPILER V9.01   MAIN                                                                  04/11/2019 14:35:46 PAGE 2   
+
+  56          void DigDisplay()
+  57          {
+  58   1        u8 i;
+  59   1        for(i=0;i<8;i++)
+  60   1        {
+  61   2          switch(i)  //位选，选择点亮的数码管，
+  62   2          {
+  63   3            case(0):
+  64   3              LSA=1;LSB=1;LSC=1; break;//显示第7位
+  65   3            case(1):
+  66   3              LSA=0;LSB=1;LSC=1; break;//显示第6位
+  67   3            case(2):
+  68   3              LSA=1;LSB=0;LSC=1; break;//显示第5位
+  69   3            case(3):
+  70   3              LSA=0;LSB=0;LSC=1; break;//显示第4位
+  71   3            case(4):
+  72   3              LSA=1;LSB=1;LSC=0; break;//显示第3位 
+  73   3            case(5):
+  74   3              LSA=0;LSB=1;LSC=0; break;//显示第2位 
+  75   3            case(6):
+  76   3              LSA=1;LSB=0;LSC=0; break;//显示第1位 
+  77   3            case(7):
+  78   3              LSA=0;LSB=0;LSC=0; break;//显示第0位  
+  79   3          }
+  80   2          P0=DisplayData[i];//发送段码
+  81   2          delay(100); //间隔一段时间扫描  
+  82   2          P0=0x00;//消隐
+  83   2        }
+  84   1      }
+  85          
+  86          void datapros()
+  87          {
+  88   1        DisplayData[0]=smgduan[min/10];
+  89   1        DisplayData[1]=smgduan[min%10];
+  90   1        DisplayData[2]=0x40;  
+  91   1        DisplayData[3]=smgduan[sec/10];
+  92   1        DisplayData[4]=smgduan[sec%10];
+  93   1        DisplayData[5]=0x40;
+  94   1        DisplayData[6]=smgduan[ssec/10];
+  95   1        DisplayData[7]=smgduan[ssec%10];
+  96   1      }
+  97          /*******************************************************************************
+  98          * 函 数 名       : main
+  99          * 函数功能     : 主函数
+ 100          * 输    入       : 无
+ 101          * 输    出       : 无
+ 102          *******************************************************************************/
+ 103          void main()
+ 104          { 
+ 105   1        Timer0Init();  //定时器0初始化
+ 106   1        while(1)
+ 107   1        {
+ 108   2          if(TF0==1)    //定时器T0溢出标志
+ 109   2          {
+ 110   3            TF0=0;
+ 111   3            TH0=0Xd8; //给定时器赋初值，定时10ms
+ 112   3            TL0=0Xf0;
+ 113   3            ssec++;
+ 114   3            if(ssec>=100)  //1s
+ 115   3            {
+ 116   4              ssec=0;
+ 117   4              sec++;
+C51 COMPILER V9.01   MAIN                                                                  04/11/2019 14:35:46 PAGE 3   
+
+ 118   4              if(sec>=60)
+ 119   4              {
+ 120   5                sec=0;
+ 121   5                min++;
+ 122   5                if(min>=60)
+ 123   5                {
+ 124   6                  min=0;
+ 125   6                }
+ 126   5              } 
+ 127   4            } 
+ 128   3          } 
+ 129   2          datapros();
+ 130   2          DigDisplay(); 
+ 131   2        }   
+ 132   1      }
+ 133          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    258    ----
+   CONSTANT SIZE    =     17    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     11    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

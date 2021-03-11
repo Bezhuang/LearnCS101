@@ -1,0 +1,18 @@
+C51 COMPILER V9.01   4_2MOTOR                                                              11/06/2018 13:51:10 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE 4_2MOTOR
+OBJECT MODULE PLACED IN 4-2Motor.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE 4-2Motor.c LARGE OPTIMIZE(0,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include ¡° 4-2Motor.h ¡±
+*** ERROR C100 IN LINE 1 OF 4-2MOTOR.C: unprintable character 0xA1 skipped
+*** ERROR C100 IN LINE 1 OF 4-2MOTOR.C: unprintable character 0xB0 skipped
+*** ERROR C141 IN LINE 1 OF 4-2MOTOR.C: syntax error near '4'
+*** ERROR C129 IN LINE 1 OF 4-2MOTOR.C: missing ';' before '.'
+*** ERROR C309 IN LINE 1 OF 4-2Motor.c: bad or missing filename
+*** WARNING C318 IN LINE 1 OF 4-2Motor.c: can't open file ''
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  5 ERROR(S)

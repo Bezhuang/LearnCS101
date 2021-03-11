@@ -1,0 +1,4 @@
+"main.obj",
+"key.obj" 
+TO "template" 
+RAMSIZE(256) 

@@ -1,0 +1,150 @@
+C51 COMPILER V9.01   MAIN                                                                  05/25/2018 11:58:02 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\output\main.obj
+COMPILER INVOKED BY: J:\mdk4\C51\BIN\C51.EXE User\main.c LARGE BROWSE INCDIR(.\User;.\Public;.\GUI;.\APP\tftlcd;.\APP\to
+                    -uch) DEBUG OBJECTEXTEND PRINT(.\output\main.lst) OBJECT(.\output\main.obj)
+
+line level    source
+
+   1          #include "public.h"  
+   2          #include "uart.h"
+   3          #include "tftlcd.h"
+   4          #include "touch.h"
+   5          #include "gui.h"
+   6          
+   7          
+   8          u8 Touch_RST=0;
+   9          
+  10          
+  11          //触摸测试
+  12          void TOUCH_Test(void)
+  13          {
+  14   1              
+  15   1              static u16 penColor = BLUE;
+  16   1      
+  17   1              TOUCH_Scan();
+  18   1              if(xpt_xy.sta)
+  19   1              {       
+  20   2                      
+  21   2                      if(xpt_xy.lcdx>tftlcd_data.width)
+  22   2                              xpt_xy.lcdx=tftlcd_data.width-1;
+  23   2                      if(xpt_xy.lcdy>tftlcd_data.height)
+  24   2                              xpt_xy.lcdy=tftlcd_data.height-1;
+  25   2                      if((xpt_xy.lcdx>=(tftlcd_data.width-3*12))&&(xpt_xy.lcdy<24))
+  26   2                              Touch_RST=1;
+  27   2                      if(xpt_xy.lcdy > tftlcd_data.height - 20)
+  28   2                      {
+  29   3                              if(xpt_xy.lcdx>100)
+  30   3                  {
+  31   4                      penColor = YELLOW;
+  32   4                  }
+  33   3                  else if(xpt_xy.lcdx>80)
+  34   3                  {
+  35   4                      penColor = CYAN;
+  36   4                  }
+  37   3                  else if(xpt_xy.lcdx>60)
+  38   3                  {
+  39   4                      penColor = GREEN;
+  40   4                  }
+  41   3                  else if(xpt_xy.lcdx>40)
+  42   3                  {
+  43   4                     penColor = MAGENTA;
+  44   4                  }
+  45   3                  else if(xpt_xy.lcdx>20)
+  46   3                  {
+  47   4                      penColor = RED;
+  48   4      
+  49   4                  }
+  50   3                  else if(xpt_xy.lcdx>0)
+  51   3                  {
+  52   4                      penColor = BLUE;
+  53   4                  }       
+  54   3                      }
+C51 COMPILER V9.01   MAIN                                                                  05/25/2018 11:58:02 PAGE 2   
+
+  55   2                      else
+  56   2                      {
+  57   3                              LCD_Fill(xpt_xy.lcdx-2,xpt_xy.lcdy-2,xpt_xy.lcdx+2,xpt_xy.lcdy+2,penColor);     
+  58   3                      }
+  59   2                                                              
+  60   2              }               
+  61   1      }
+  62          
+  63          //GUI测试
+  64          void GUI_Test(void)
+  65          {
+  66   1              FRONT_COLOR=WHITE;
+  67   1              LCD_ShowFontHZ(tftlcd_data.width/2-2*24-12, 0,"普中科技");
+  68   1              LCD_ShowString(tftlcd_data.width/2-7*12,30,tftlcd_data.width,tftlcd_data.height,24,"www.prechin.cn");
+  69   1              LCD_ShowString(tftlcd_data.width/2-7*8,55,tftlcd_data.width,tftlcd_data.height,24,"GUI Test");
+  70   1              
+  71   1              FRONT_COLOR=RED;
+  72   1              gui_draw_bigpoint(10,55,GREEN);
+  73   1              gui_draw_bline(10,80,120,80,10,GREEN);
+  74   1              gui_draw_rectangle(10,95,30,30,GREEN);
+  75   1              gui_draw_arcrectangle(50,95,30,30,5,1,BLUE,GREEN);
+  76   1              gui_fill_rectangle(90,95,30,30,GREEN);
+  77   1              //gui_fill_circle(90,120,20,GREEN);
+  78   1              gui_fill_ellipse(30,150,20,10,GREEN);
+  79   1      
+  80   1              //更多的GUI等待大家来发掘和编写
+  81   1              
+  82   1              delay_ms(2000);
+  83   1              LCD_Clear(BACK_COLOR);          
+  84   1      }
+  85          
+  86          void main()
+  87          {
+  88   1              
+  89   1              u16 color=0;
+  90   1      
+  91   1              UART_Init();
+  92   1              TFTLCD_Init();
+  93   1      
+  94   1      Start:
+  95   1              //GUI_Test();
+  96   1                      
+  97   1              FRONT_COLOR=WHITE;
+  98   1              LCD_ShowFontHZ(tftlcd_data.width/2-2*24-12, 0,"普中科技");
+  99   1              LCD_ShowString(tftlcd_data.width/2-7*12,30,tftlcd_data.width,tftlcd_data.height,24,"www.prechin.cn");
+ 100   1              FRONT_COLOR=RED;
+ 101   1              LCD_ShowString(tftlcd_data.width-3*12,0,tftlcd_data.width,tftlcd_data.height,24,"RST");
+ 102   1              LCD_Fill(0, tftlcd_data.height - 20, 20, tftlcd_data.height, BLUE);
+ 103   1          LCD_Fill(20, tftlcd_data.height - 20, 40, tftlcd_data.height, RED);
+ 104   1          LCD_Fill(40, tftlcd_data.height - 20, 60, tftlcd_data.height, MAGENTA);
+ 105   1          LCD_Fill(60, tftlcd_data.height - 20, 80, tftlcd_data.height, GREEN);
+ 106   1          LCD_Fill(80, tftlcd_data.height - 20, 100, tftlcd_data.height, CYAN);
+ 107   1          LCD_Fill(100, tftlcd_data.height - 20, 120, tftlcd_data.height, YELLOW);
+ 108   1              
+ 109   1                      
+ 110   1              while(1)
+ 111   1              {
+ 112   2                      if(Touch_RST)
+ 113   2                      {
+ 114   3                              Touch_RST=0;
+ 115   3                              LCD_Clear(BACK_COLOR);
+ 116   3                              goto Start;
+C51 COMPILER V9.01   MAIN                                                                  05/25/2018 11:58:02 PAGE 3   
+
+ 117   3                      }
+ 118   2                      
+ 119   2                      TOUCH_Test();
+ 120   2                              
+ 121   2              }                                       
+ 122   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1335    ----
+   CONSTANT SIZE    =     37    ----
+   XDATA SIZE       =      3       2
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

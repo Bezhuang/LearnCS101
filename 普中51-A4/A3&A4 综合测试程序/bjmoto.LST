@@ -1,0 +1,62 @@
+C51 COMPILER V9.01   BJMOTO                                                                09/20/2019 08:40:58 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE BJMOTO
+OBJECT MODULE PLACED IN bjmoto.OBJ
+COMPILER INVOKED BY: D:\YZ\KEILC51\C51\BIN\C51.EXE bjmoto.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include "bjmoto.h"
+   2          
+   3          
+   4          void BJMOTO_Test(void)
+   5          {
+   6   1              
+   7   1              while(1)
+   8   1              {
+   9   2                      MOTOA = 1;
+  10   2                      MOTOB = 0;
+  11   2                      MOTOC = 1;
+  12   2                      MOTOD = 1;
+  13   2                      delay(SPEED);
+  14   2      
+  15   2                      MOTOA = 1;
+  16   2                      MOTOB = 1;
+  17   2                      MOTOC = 1;
+  18   2                      MOTOD = 0;
+  19   2                      delay(SPEED);
+  20   2      
+  21   2                      MOTOA = 0;
+  22   2                      MOTOB = 1;
+  23   2                      MOTOC = 1;
+  24   2                      MOTOD = 1;
+  25   2                      delay(SPEED);
+  26   2      
+  27   2                      MOTOA = 1;
+  28   2                      MOTOB = 1;
+  29   2                      MOTOC = 0;
+  30   2                      MOTOD = 1;
+  31   2                      delay(SPEED);
+  32   2      
+  33   2                      if(KeyValue!=BJMOTO_TEST)
+  34   2                      {
+  35   3                              return; 
+  36   3                      }       
+  37   2              }
+  38   1      }
+  39          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     67    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

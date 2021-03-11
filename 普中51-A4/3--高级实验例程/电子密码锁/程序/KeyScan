@@ -1,0 +1,4 @@
+#ifndef _KeyScan_H
+#define KeyScan_H
+
+#include<reg52.h>

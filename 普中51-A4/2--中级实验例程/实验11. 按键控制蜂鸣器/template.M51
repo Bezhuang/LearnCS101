@@ -1,0 +1,152 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        07/17/2018  13:59:28  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+J:\MDK4\C51\BIN\BL51.EXE main.obj TO template RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  main.obj (MAIN)
+  J:\MDK4\C51\LIB\C51S.LIB (?C_STARTUP)
+  J:\MDK4\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  template (MAIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0001H     UNIT         ?DT?MAIN
+            IDATA   0009H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     008CH     UNIT         ?C_C51STARTUP
+            CODE    008FH     0027H     UNIT         ?PR?KEYPROS?MAIN
+            CODE    00B6H     0014H     UNIT         ?PR?SOUND?MAIN
+            CODE    00CAH     0011H     UNIT         ?PR?MAIN?MAIN
+            CODE    00DBH     000BH     UNIT         ?PR?_DELAY?MAIN
+            CODE    00E6H     0004H     UNIT         ?C_INITSEG
+
+
+
+OVERLAY MAP OF MODULE:   template (MAIN)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?C_C51STARTUP
+  +--> ?PR?MAIN?MAIN
+  +--> ?C_INITSEG
+
+?PR?MAIN?MAIN
+  +--> ?PR?KEYPROS?MAIN
+  +--> ?PR?SOUND?MAIN
+
+?PR?KEYPROS?MAIN
+  +--> ?PR?_DELAY?MAIN
+
+?PR?SOUND?MAIN
+  +--> ?PR?_DELAY?MAIN
+
+
+
+SYMBOL TABLE OF MODULE:  template (MAIN)
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/17/2018  13:59:28  PAGE 2
+
+
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  C:008FH         PUBLIC        keypros
+  C:00DBH         PUBLIC        _delay
+  D:00B8H         PUBLIC        IP
+  B:00B0H.1       PUBLIC        k1
+  B:00B0H.0       PUBLIC        k2
+  B:0090H.5       PUBLIC        beep
+  C:00CAH         PUBLIC        main
+  C:00B6H         PUBLIC        sound
+  D:0008H         PUBLIC        start
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        i
+  C:00DBH         LINE#         29
+  C:00DBH         LINE#         30
+  C:00DBH         LINE#         31
+  C:00E5H         LINE#         32
+  -------         ENDPROC       _DELAY
+  -------         PROC          SOUND
+  -------         DO            
+  D:0005H         SYMBOL        i
+  -------         ENDDO         
+  C:00B6H         LINE#         34
+  C:00B6H         LINE#         35
+  C:00B6H         LINE#         36
+  C:00B8H         LINE#         37
+  C:00BEH         LINE#         38
+  C:00BEH         LINE#         39
+  C:00C0H         LINE#         40
+  C:00C7H         LINE#         41
+  C:00C9H         LINE#         42
+  -------         ENDPROC       SOUND
+  -------         PROC          KEYPROS
+  C:008FH         LINE#         43
+  C:008FH         LINE#         44
+  C:008FH         LINE#         45
+  C:0092H         LINE#         46
+  C:0092H         LINE#         47
+  C:0099H         LINE#         48
+  C:009CH         LINE#         49
+  C:009CH         LINE#         50
+  C:009FH         LINE#         51
+  C:009FH         LINE#         52
+  C:00A2H         LINE#         53
+  C:00A2H         LINE#         54
+  C:00A5H         LINE#         55
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/17/2018  13:59:28  PAGE 3
+
+
+  C:00A5H         LINE#         56
+  C:00ACH         LINE#         57
+  C:00AFH         LINE#         58
+  C:00AFH         LINE#         59
+  C:00B2H         LINE#         60
+  C:00B2H         LINE#         61
+  C:00B5H         LINE#         62
+  C:00B5H         LINE#         63
+  -------         ENDPROC       KEYPROS
+  -------         PROC          MAIN
+  C:00CAH         LINE#         70
+  C:00CAH         LINE#         71
+  C:00CAH         LINE#         72
+  C:00CAH         LINE#         73
+  C:00CAH         LINE#         74
+  C:00CDH         LINE#         75
+  C:00D2H         LINE#         76
+  C:00D2H         LINE#         77
+  C:00D5H         LINE#         78
+  C:00D7H         LINE#         80
+  C:00D7H         LINE#         81
+  C:00D9H         LINE#         82
+  C:00D9H         LINE#         83
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        MAIN
+
+Program Size: data=10.0 xdata=0 code=234
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,373 @@
+C51 COMPILER V9.59.0.0   MAIN                                                              05/20/2019 14:12:35 PAGE 1   
+
+
+C51 COMPILER V9.59.0.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: D:\KEIL5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          
+   3          #define uchar unsigned char
+   4          
+   5          /***************************************************/
+   6          #define TX_ADR_WIDTH   5  // 5???????/????
+   7          #define TX_PLOAD_WIDTH 4  // ??????????
+   8          sbit LED = P2^1;
+   9          sbit KEY1 = P3^1;
+  10          sbit KEY2 = P3^2;
+  11          
+  12          uchar code TX_ADDRESS[TX_ADR_WIDTH] = {0x34,0x43,0x10,0x10,0x01};  // ??????????
+  13          uchar RX_BUF[TX_PLOAD_WIDTH];
+  14          uchar TX_BUF[TX_PLOAD_WIDTH];
+  15          uchar flag;
+  16          uchar DATA = 0x01;
+  17          uchar bdata sta;
+  18          sbit  RX_DR     = sta^6;
+  19          sbit  TX_DS     = sta^5;
+  20          sbit  MAX_RT = sta^4;
+  21          
+  22          sbit CE =  P1^2;
+  23          sbit CSN=  P1^3;
+  24          sbit SCK=  P1^7;
+  25          sbit MOSI= P1^1;
+  26          sbit MISO= P1^6;
+  27          sbit IRQ = P1^4;
+  28          
+  29          // SPI(nRF24L01) commands
+  30          #define READ_REG    0x00  // Define read command to register
+  31          #define WRITE_REG   0x20  // Define write command to register
+  32          #define RD_RX_PLOAD 0x61  // Define RX payload register address
+  33          #define WR_TX_PLOAD 0xA0  // Define TX payload register address
+  34          #define FLUSH_TX    0xE1  // Define flush TX register command
+  35          #define FLUSH_RX    0xE2  // Define flush RX register command
+  36          #define REUSE_TX_PL 0xE3  // Define reuse TX payload register command
+  37          #define NOP         0xFF  // Define No Operation, might be used to read status register
+  38          
+  39          // SPI(nRF24L01) registers(addresses)
+  40          #define CONFIG      0x00  // 'Config' register address
+  41          #define EN_AA       0x01  // 'Enable Auto Acknowledgment' register address
+  42          #define EN_RXADDR   0x02  // 'Enabled RX addresses' register address
+  43          #define SETUP_AW    0x03  // 'Setup address width' register address
+  44          #define SETUP_RETR  0x04  // 'Setup Auto. Retrans' register address
+  45          #define RF_CH       0x05  // 'RF channel' register address
+  46          #define RF_SETUP    0x06  // 'RF setup' register address
+  47          #define STATUS      0x07  // 'Status' register address
+  48          #define OBSERVE_TX  0x08  // 'Observe TX' register address
+  49          #define CD          0x09  // 'Carrier Detect' register address
+  50          #define RX_ADDR_P0  0x0A  // 'RX address pipe0' register address
+  51          #define RX_ADDR_P1  0x0B  // 'RX address pipe1' register address
+  52          #define RX_ADDR_P2  0x0C  // 'RX address pipe2' register address
+  53          #define RX_ADDR_P3  0x0D  // 'RX address pipe3' register address
+  54          #define RX_ADDR_P4  0x0E  // 'RX address pipe4' register address
+  55          #define RX_ADDR_P5  0x0F  // 'RX address pipe5' register address
+C51 COMPILER V9.59.0.0   MAIN                                                              05/20/2019 14:12:35 PAGE 2   
+
+  56          #define TX_ADDR     0x10  // 'TX address' register address
+  57          #define RX_PW_P0    0x11  // 'RX payload width, pipe0' register address
+  58          #define RX_PW_P1    0x12  // 'RX payload width, pipe1' register address
+  59          #define RX_PW_P2    0x13  // 'RX payload width, pipe2' register address
+  60          #define RX_PW_P3    0x14  // 'RX payload width, pipe3' register address
+  61          #define RX_PW_P4    0x15  // 'RX payload width, pipe4' register address
+  62          #define RX_PW_P5    0x16  // 'RX payload width, pipe5' register address
+  63          #define FIFO_STATUS 0x17  // 'FIFO Status Register' register address
+  64          
+  65          void blink(char i);
+  66          
+  67          /**************************************************
+  68          ??: init_io()
+  69          
+  70          ??:
+  71              ???IO
+  72          /**************************************************/
+  73          void init_io(void)
+  74          {
+  75   1          CE  = 0;        // ??
+  76   1          CSN = 1;        // SPI??
+  77   1          SCK = 0;        // SPI????
+  78   1          IRQ = 1;        // ????
+  79   1          LED = 1;        // ?????
+  80   1      }
+  81          /**************************************************/
+  82          
+  83          /**************************************************
+  84          ??:delay_ms()
+  85          
+  86          ??:
+  87              ??x??
+  88          /**************************************************/
+  89          void delay_ms(uchar x)
+  90          {
+  91   1          uchar i, j;
+  92   1          i = 0;
+  93   1          for(i=0; i<x; i++)
+  94   1          {
+  95   2             j = 250;
+  96   2             while(--j);
+  97   2             j = 250;
+  98   2             while(--j);
+  99   2          }
+ 100   1      }
+ 101          /**************************************************/
+ 102          
+ 103          /**************************************************
+ 104          ??:SPI_RW()
+ 105          
+ 106          ??:
+ 107              ??SPI??,???????nRF24L01,???nRF24L01
+ 108              ?????
+ 109          /**************************************************/
+ 110          uchar SPI_RW(uchar byte)
+ 111          {
+ 112   1          uchar i;
+ 113   1             for(i=0; i<8; i++)          // ??8?
+ 114   1             {
+ 115   2                 MOSI = (byte & 0x80);   // byte??????MOSI
+ 116   2                 byte <<= 1;             // ?????????
+ 117   2                 SCK = 1;                // ??SCK,nRF24L01?MOSI??1???,???MISO??1???
+C51 COMPILER V9.59.0.0   MAIN                                                              05/20/2019 14:12:35 PAGE 3   
+
+ 118   2                 byte |= MISO;           // ?MISO?byte???
+ 119   2                 SCK = 0;                // SCK??
+ 120   2             }
+ 121   1          return(byte);               // ????????
+ 122   1      }
+ 123          /**************************************************/
+ 124          
+ 125          /**************************************************
+ 126          ??:SPI_RW_Reg()
+ 127          
+ 128          ??:
+ 129              ???value?reg???
+ 130          /**************************************************/
+ 131          uchar SPI_RW_Reg(uchar reg, uchar value)
+ 132          {
+ 133   1          uchar status;
+ 134   1            CSN = 0;                   // CSN??,??????
+ 135   1            status = SPI_RW(reg);      // ?????,???????
+ 136   1            SPI_RW(value);             // ??????????
+ 137   1            CSN = 1;                   // CSN??,??????
+ 138   1            return(status);            // ???????
+ 139   1      }
+ 140          /**************************************************/
+ 141          
+ 142          /**************************************************
+ 143          ??:SPI_Read()
+ 144          
+ 145          ??:
+ 146              ?reg???????
+ 147          /**************************************************/
+ 148          uchar SPI_Read(uchar reg)
+ 149          {
+ 150   1          uchar reg_val;
+ 151   1            CSN = 0;                    // CSN??,??????
+ 152   1            SPI_RW(reg);                // ?????
+ 153   1            reg_val = SPI_RW(0);        // ??????????
+ 154   1            CSN = 1;                    // CSN??,??????
+ 155   1            return(reg_val);            // ???????
+ 156   1      }
+ 157          /**************************************************/
+ 158          
+ 159          /**************************************************
+ 160          ??:SPI_Read_Buf()
+ 161          
+ 162          ??:
+ 163              ?reg?????bytes???,??????????
+ 164              ?????/????
+ 165          /**************************************************/
+ 166          uchar SPI_Read_Buf(uchar reg, uchar * pBuf, uchar bytes)
+ 167          {
+ 168   1          uchar status, i;
+ 169   1            CSN = 0;                    // CSN??,??????
+ 170   1            status = SPI_RW(reg);       // ?????,???????
+ 171   1            for(i=0; i<bytes; i++)
+ 172   1              pBuf[i] = SPI_RW(0);    // ?????nRF24L01??
+ 173   1            CSN = 1;                    // CSN??,??????
+ 174   1            return(status);             // ???????
+ 175   1      }
+ 176          /**************************************************/
+ 177          
+ 178          /**************************************************
+ 179          ??:SPI_Write_Buf()
+C51 COMPILER V9.59.0.0   MAIN                                                              05/20/2019 14:12:35 PAGE 4   
+
+ 180          
+ 181          ??:
+ 182              ?pBuf?????????nRF24L01,???????
+ 183              ????????/????
+ 184          /**************************************************/
+ 185          uchar SPI_Write_Buf(uchar reg, uchar * pBuf, uchar bytes)
+ 186          {
+ 187   1          uchar status, i;
+ 188   1            CSN = 0;                    // CSN??,??????
+ 189   1            status = SPI_RW(reg);       // ?????,???????
+ 190   1            for(i=0; i<bytes; i++)
+ 191   1              SPI_RW(pBuf[i]);        // ??????nRF24L01
+ 192   1            CSN = 1;                    // CSN??,??????
+ 193   1            return(status);             // ???????
+ 194   1      }
+ 195          /**************************************************/
+ 196          
+ 197          /**************************************************
+ 198          ??:RX_Mode()
+ 199          
+ 200          ??:
+ 201              ??????nRF24L01?????,????????????
+ 202          /**************************************************/
+ 203          void RX_Mode(void)
+ 204          {
+ 205   1          CE = 0;
+ 206   1            SPI_Write_Buf(WRITE_REG + RX_ADDR_P0, TX_ADDRESS, TX_ADR_WIDTH);  // ????????0??????????????
+ 207   1            SPI_RW_Reg(WRITE_REG + EN_AA, 0x01);               // ??????0????
+ 208   1            SPI_RW_Reg(WRITE_REG + EN_RXADDR, 0x01);           // ??????0
+ 209   1            SPI_RW_Reg(WRITE_REG + RF_CH, 40);                 // ??????0x40
+ 210   1            SPI_RW_Reg(WRITE_REG + RX_PW_P0, TX_PLOAD_WIDTH);  // ????0???????????????
+ 211   1            SPI_RW_Reg(WRITE_REG + RF_SETUP, 0x07);            // ?????1Mbps,????0dBm,????????
+ 212   1            SPI_RW_Reg(WRITE_REG + CONFIG, 0x0f);              // CRC??,16?CRC??,??,????
+ 213   1          delay_ms(150);
+ 214   1            CE = 1;                                            // ??CE??????
+ 215   1      }
+ 216          /**************************************************/
+ 217          
+ 218          /**************************************************
+ 219          ??:TX_Mode()
+ 220          
+ 221          ??:
+ 222              ??????nRF24L01?????,(CE=1????10us),
+ 223              130us?????,???????,??????????
+ 224              ?????????
+ 225          /**************************************************/
+ 226          void TX_Mode(uchar * BUF)
+ 227          {
+ 228   1          CE = 0;
+ 229   1            SPI_Write_Buf(WRITE_REG + TX_ADDR, TX_ADDRESS, TX_ADR_WIDTH);     // ??????
+ 230   1            SPI_Write_Buf(WRITE_REG + RX_ADDR_P0, TX_ADDRESS, TX_ADR_WIDTH);  // ????????,????0?????????
+ 231   1            SPI_Write_Buf(WR_TX_PLOAD, BUF, TX_PLOAD_WIDTH);                  // ?????TX FIFO
+ 232   1            SPI_RW_Reg(WRITE_REG + EN_AA, 0x01);       // ??????0????
+ 233   1            SPI_RW_Reg(WRITE_REG + EN_RXADDR, 0x01);   // ??????0
+ 234   1            SPI_RW_Reg(WRITE_REG + SETUP_RETR, 0x0a);  // ????????250us+86us,????10?
+ 235   1            SPI_RW_Reg(WRITE_REG + RF_CH, 40);         // ??????0x40
+ 236   1            SPI_RW_Reg(WRITE_REG + RF_SETUP, 0x07);    // ?????1Mbps,????0dBm,????????
+ 237   1            SPI_RW_Reg(WRITE_REG + CONFIG, 0x0e);      // CRC??,16?CRC??,??
+ 238   1          delay_ms(150);
+ 239   1          CE = 1;
+ 240   1      }
+ 241          /**************************************************/
+C51 COMPILER V9.59.0.0   MAIN                                                              05/20/2019 14:12:35 PAGE 5   
+
+ 242          
+ 243          /**************************************************
+ 244          ??:Check_ACK()
+ 245          
+ 246          ??:
+ 247              ??????????????,?????????
+ 248              ?????
+ 249          /**************************************************/
+ 250          uchar Check_ACK(bit clear)
+ 251          {
+ 252   1          delay_ms(200);
+ 253   1          while(IRQ);
+ 254   1          sta = SPI_RW(NOP);                    // ???????
+ 255   1          if(TX_DS)
+ 256   1          {
+ 257   2              blink(3);
+ 258   2          }
+ 259   1          //blink(5);
+ 260   1          if(MAX_RT)
+ 261   1              if(clear)                         // ????TX FIFO,???????MAX_RT???????
+ 262   1                  SPI_RW(FLUSH_TX);
+ 263   1          SPI_RW_Reg(WRITE_REG + STATUS, sta);  // ??TX_DS?MAX_RT????
+ 264   1          IRQ = 1;
+ 265   1          if(TX_DS)
+ 266   1              return(0x00);
+ 267   1          else
+ 268   1              return(0xff);
+ 269   1      }
+ 270          /**************************************************/
+ 271          
+ 272          /**************************************************
+ 273          ??:CheckButtons()
+ 274          
+ 275          ??:
+ 276              ????????,??????????
+ 277          /**************************************************/
+ 278          void CheckButtons()
+ 279          {
+ 280   1          if(KEY1 == 0)
+ 281   1          {
+ 282   2              delay_ms(20);
+ 283   2              if(KEY1 == 0)
+ 284   2              {
+ 285   3                  TX_BUF[0] = 1;          // ??????
+ 286   3                  //TX_BUF[0] = 0xff;          // ??????
+ 287   3                  TX_Mode(TX_BUF);            // ?nRF24L01????????????            
+ 288   3                  //LED = ~DATA;                // ????LED??
+ 289   3                  Check_ACK(0);               // ??????,??TX FIFO
+ 290   3                  delay_ms(250);
+ 291   3                  delay_ms(250);
+ 292   3              }
+ 293   2          }
+ 294   1      
+ 295   1          if(KEY2 == 0)
+ 296   1          {
+ 297   2              delay_ms(20);
+ 298   2              if(KEY2 == 0)
+ 299   2              {
+ 300   3                  TX_BUF[0] = 2;          // ??????
+ 301   3                  //TX_BUF[0] = 0xff;          // ??????
+ 302   3                  TX_Mode(TX_BUF);            // ?nRF24L01????????????            
+ 303   3                  //LED = ~DATA;                // ????LED??
+C51 COMPILER V9.59.0.0   MAIN                                                              05/20/2019 14:12:35 PAGE 6   
+
+ 304   3                  Check_ACK(0);               // ??????,??TX FIFO
+ 305   3                  delay_ms(250);
+ 306   3                  delay_ms(250);
+ 307   3              }
+ 308   2          }
+ 309   1      
+ 310   1      
+ 311   1      }
+ 312          /**************************************************/
+ 313          
+ 314          void blink(char i)
+ 315          {
+ 316   1          while(i--)
+ 317   1          {
+ 318   2              LED = 1;
+ 319   2              delay_ms(500);
+ 320   2              LED = 0;
+ 321   2              delay_ms(500);
+ 322   2          }
+ 323   1      
+ 324   1      }
+ 325          
+ 326          /**************************************************
+ 327          ??:main()
+ 328          
+ 329          ??:
+ 330              ???
+ 331          /**************************************************/
+ 332          void main(void)
+ 333          {
+ 334   1          init_io();                      // ???IO
+ 335   1      
+ 336   1          while(1)
+ 337   1          {
+ 338   2              CheckButtons();           // ????
+ 339   2          }
+ 340   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    475    ----
+   CONSTANT SIZE    =      5    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     11      13
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

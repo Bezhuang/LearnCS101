@@ -1,0 +1,58 @@
+C51 COMPILER V9.01   ZLMOTO                                                                09/20/2019 08:40:57 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE ZLMOTO
+OBJECT MODULE PLACED IN zlmoto.OBJ
+COMPILER INVOKED BY: D:\YZ\KEILC51\C51\BIN\C51.EXE zlmoto.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include "zlmoto.h"
+   2          #include "key.h"
+   3          
+   4          
+   5          void ZLMOTO_Test(void)
+   6          {
+   7   1              u8 key=0;
+   8   1              u8 mode=0;
+   9   1              EA=0;
+  10   1              KEY_PORT=0xff;
+  11   1              while(1)
+  12   1              {
+  13   2                      key=KeyScan(0);
+  14   2                      
+  15   2                      if(key==KEY1)
+  16   2                      {
+  17   3                              mode++;
+  18   3                              if(mode==2)mode=0;
+  19   3                      }
+  20   2                      if(mode==0)       //Í£Ö¹
+  21   2                      {
+  22   3                              motoa=0;
+  23   3                              
+  24   3                      }
+  25   2                      else if(mode==1)  //¿ªÆô
+  26   2                      {
+  27   3                              motoa=1;                
+  28   3                      }
+  29   2                      if(KeyValue!=ZLMOTO_TEST)
+  30   2                      {
+  31   3                              motoa=0;
+  32   3                              return; 
+  33   3                      }       
+  34   2              }
+  35   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     50    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

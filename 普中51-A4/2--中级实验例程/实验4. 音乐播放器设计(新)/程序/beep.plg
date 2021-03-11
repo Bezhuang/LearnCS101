@@ -1,0 +1,15 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Project:</h2>
+G:\迅雷下载\实验4. 音乐播放器设计(新)\程序\beep.uvproj
+Project File Date:  08/19/2019
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling beep.c...
+linking...
+Program Size: data=20.0 xdata=0 code=587
+creating hex file from "beep"...
+"beep" - 0 Error(s), 0 Warning(s).

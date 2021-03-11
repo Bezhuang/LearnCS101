@@ -1,0 +1,6 @@
+"lcd.obj",
+"main.obj",
+"key.obj",
+"i2c.obj" 
+TO "template" 
+RAMSIZE(256) 

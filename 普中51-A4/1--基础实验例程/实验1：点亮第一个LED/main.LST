@@ -1,0 +1,49 @@
+C51 COMPILER V9.01   MAIN                                                                  04/10/2019 10:21:05 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          /**************************************************************************************
+   2          实验现象：下载程序后"LED&交通灯模块"的D1指示灯点亮
+   3          接线说明： 单片机-->LED&交通灯模块(具体接线图可见开发攻略对应实验的“实验现象”章节)
+   4                 P00-->D1 
+   5          注意事项：                                          
+   6          ***************************************************************************************/
+   7          
+   8          
+   9          #include "reg52.h"    //此文件中定义了单片机的一些特殊功能寄存器
+  10          
+  11          sbit led=P2^0;     //将单片机的P0.0端口定义为led
+  12          
+  13          /*******************************************************************************
+  14          * 函 数 名       : main
+  15          * 函数功能     : 主函数
+  16          * 输    入       : 无
+  17          * 输    出       : 无
+  18          *******************************************************************************/
+  19          void main()
+  20          {
+  21   1        led=0;  //P2.0端口设置为低电平
+  22   1        while(1)
+  23   1        {
+  24   2                  
+  25   2        }   
+  26   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =      4    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,416 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        07/25/2018  11:37:23  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+J:\MDK4\C51\BIN\BL51.EXE 温控调节直流电机的速度.obj, lcd.obj TO 温控调节直流电机的速度 RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL WITH FLOATING POINT ARITHMETIC
+
+
+INPUT MODULES INCLUDED:
+  温控调节直流电机的速度.obj (蝊控调节_绷鞯缁_的速度)
+  lcd.obj (LCD)
+  J:\MDK4\C51\LIB\C51FPS.LIB (?C?FPMUL)
+  J:\MDK4\C51\LIB\C51FPS.LIB (?C?FCAST)
+  J:\MDK4\C51\LIB\C51FPS.LIB (?C?CASTF)
+  J:\MDK4\C51\LIB\C51FPS.LIB (?C?FPGETOPN)
+  J:\MDK4\C51\LIB\C51S.LIB (?C_STARTUP)
+  J:\MDK4\C51\LIB\C51S.LIB (?C?UIDIV)
+  J:\MDK4\C51\LIB\C51S.LIB (?C?LNEG)
+  J:\MDK4\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  温控调节直流电机的速度 (蝊控调节_绷鞯缁_的速度)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     001DH     UNIT         ?DT?蝊控调节_绷鞯缁_的速度
+            DATA    0025H     0008H     UNIT         _DATA_GROUP_
+            IDATA   002DH     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0228H     UNIT         ?C?LIB_CODE
+            CODE    022BH     00E3H     UNIT         ?PR?DISPLAY?蝊控调节_绷鞯缁_的速度
+            CODE    030EH     008CH     UNIT         ?C_C51STARTUP
+            CODE    039AH     004BH     UNIT         ?PR?MAIN?蝊控调节_绷鞯缁_的速度
+            CODE    03E5H     003FH     UNIT         ?PR?READTEMP?蝊控调节_绷鞯缁_的速度
+            CODE    0424H     002AH     UNIT         ?PR?_LCD1602_DELAY1MS?LCD
+            CODE    044EH     0027H     UNIT         ?PR?DS18B20INIT?蝊控调节_绷鞯缁_的速度
+            CODE    0475H     001FH     UNIT         ?C_INITSEG
+            CODE    0494H     001EH     UNIT         ?PR?DS18B20RD?蝊控调节_绷鞯缁_的速度
+            CODE    04B2H     001DH     UNIT         ?PR?_DS18B20WR?蝊控调节_绷鞯缁_的速度
+            CODE    04CFH     0019H     UNIT         ?PR?LCDINIT?LCD
+            CODE    04E8H     0011H     UNIT         ?PR?_DELAY?蝊控调节_绷鞯缁_的速度
+            CODE    04F9H     000FH     UNIT         ?PR?_MOTOSPEED?蝊控调节_绷鞯缁_的速度
+            CODE    0508H     000CH     UNIT         ?PR?_WRD?蝊控调节_绷鞯缁_的速度
+            CODE    0514H     000AH     UNIT         ?PR?_LCDWRITECOM?LCD
+            CODE    051EH     000AH     UNIT         ?PR?_LCDWRITEDATA?LCD
+            CODE    0528H     0003H     UNIT         ?PR?_WRC?蝊控调节_绷鞯缁_的速度
+            CODE    052BH     0003H     UNIT         ?PR?LCD_INIT?蝊控调节_绷鞯缁_的速度
+
+
+
+OVERLAY MAP OF MODULE:   温控调节直流电机的速度 (蝊控调节_绷鞯缁_的速度)
+
+
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/25/2018  11:37:23  PAGE 2
+
+
+SEGMENT                                          DATA_GROUP 
+  +--> CALLED SEGMENT                          START    LENGTH
+--------------------------------------------------------------
+?C_C51STARTUP                                  -----    -----
+  +--> ?PR?MAIN?蝊控调节_绷鞯缁_的速度
+  +--> ?C_INITSEG
+
+?PR?MAIN?蝊控调节_绷鞯缁_的速度                -----    -----
+  +--> ?PR?LCD_INIT?蝊控调节_绷鞯缁_的速度
+  +--> ?PR?READTEMP?蝊控调节_绷鞯缁_的速度
+  +--> ?PR?DISPLAY?蝊控调节_绷鞯缁_的速度
+  +--> ?PR?_MOTOSPEED?蝊控调节_绷鞯缁_的速度
+
+?PR?LCD_INIT?蝊控调节_绷鞯缁_的速度            -----    -----
+  +--> ?PR?LCDINIT?LCD
+
+?PR?LCDINIT?LCD                                -----    -----
+  +--> ?PR?_LCDWRITECOM?LCD
+
+?PR?_LCDWRITECOM?LCD                           -----    -----
+  +--> ?PR?_LCD1602_DELAY1MS?LCD
+
+?PR?READTEMP?蝊控调节_绷鞯缁_的速度            -----    -----
+  +--> ?PR?DS18B20INIT?蝊控调节_绷鞯缁_的速度
+  +--> ?PR?_DS18B20WR?蝊控调节_绷鞯缁_的速度
+  +--> ?PR?_DELAY?蝊控调节_绷鞯缁_的速度
+  +--> ?PR?DS18B20RD?蝊控调节_绷鞯缁_的速度
+
+?PR?DS18B20INIT?蝊控调节_绷鞯缁_的速度         -----    -----
+  +--> ?PR?_DELAY?蝊控调节_绷鞯缁_的速度
+
+?PR?_DS18B20WR?蝊控调节_绷鞯缁_的速度          -----    -----
+  +--> ?PR?_DELAY?蝊控调节_绷鞯缁_的速度
+
+?PR?DS18B20RD?蝊控调节_绷鞯缁_的速度           -----    -----
+  +--> ?PR?_DELAY?蝊控调节_绷鞯缁_的速度
+
+?PR?DISPLAY?蝊控调节_绷鞯缁_的速度             0025H    0008H
+  +--> ?PR?_WRC?蝊控调节_绷鞯缁_的速度
+  +--> ?PR?_WRD?蝊控调节_绷鞯缁_的速度
+
+?PR?_WRC?蝊控调节_绷鞯缁_的速度                -----    -----
+  +--> ?PR?_LCDWRITECOM?LCD
+
+?PR?_WRD?蝊控调节_绷鞯缁_的速度                -----    -----
+  +--> ?PR?_LCDWRITEDATA?LCD
+
+?PR?_LCDWRITEDATA?LCD                          -----    -----
+  +--> ?PR?_LCD1602_DELAY1MS?LCD
+
+
+
+SYMBOL TABLE OF MODULE:  温控调节直流电机的速度 (蝊控调节_绷鞯缁_的速度)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/25/2018  11:37:23  PAGE 3
+
+
+  -------         MODULE        蝊控调节_绷鞯缁_的速度
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  C:04EEH         PUBLIC        _delay
+  C:039AH         PUBLIC        main
+  D:0008H         PUBLIC        temp
+  C:044EH         PUBLIC        ds18b20init
+  B:0090H.0       PUBLIC        moto
+  C:052BH         PUBLIC        lcd_init
+  C:0528H         PUBLIC        _wrc
+  C:0511H         PUBLIC        _wrd
+  D:0009H         PUBLIC        num
+  B:00B0H.7       PUBLIC        dq
+  C:04F9H         PUBLIC        _motospeed
+  C:03E5H         PUBLIC        readtemp
+  C:0494H         PUBLIC        ds18b20rd
+  D:0013H         PUBLIC        a
+  D:0014H         PUBLIC        c
+  D:0015H         PUBLIC        d
+  C:04B2H         PUBLIC        _ds18b20wr
+  C:022BH         PUBLIC        display
+  -------         PROC          L?0037
+  -------         ENDPROC       L?0037
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        i
+  C:04EEH         LINE#         30
+  C:04EEH         LINE#         31
+  C:04EEH         LINE#         32
+  C:04F8H         LINE#         33
+  -------         ENDPROC       _DELAY
+  -------         PROC          _WRC
+  D:0007H         SYMBOL        c
+  C:0528H         LINE#         34
+  C:0528H         LINE#         35
+  C:0528H         LINE#         36
+  -------         ENDPROC       _WRC
+  -------         PROC          L?0036
+  -------         ENDPROC       L?0036
+  -------         PROC          _WRD
+  D:0007H         SYMBOL        dat
+  C:0511H         LINE#         38
+  C:0511H         LINE#         39
+  C:0511H         LINE#         40
+  -------         ENDPROC       _WRD
+  -------         PROC          LCD_INIT
+  C:052BH         LINE#         42
+  C:052BH         LINE#         43
+  C:052BH         LINE#         44
+  -------         ENDPROC       LCD_INIT
+  -------         PROC          DS18B20INIT
+  C:044EH         LINE#         46
+  C:044EH         LINE#         47
+  C:044EH         LINE#         48
+  C:044EH         LINE#         49
+  C:0451H         LINE#         50
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/25/2018  11:37:23  PAGE 4
+
+
+  C:0453H         LINE#         51
+  C:045AH         LINE#         52
+  C:045CH         LINE#         53
+  C:0463H         LINE#         54
+  C:0465H         LINE#         55
+  C:046CH         LINE#         56
+  C:046EH         LINE#         57
+  -------         ENDPROC       DS18B20INIT
+  -------         PROC          _DS18B20WR
+  D:0005H         SYMBOL        dat
+  -------         DO            
+  D:0003H         SYMBOL        i
+  -------         ENDDO         
+  C:04B2H         LINE#         59
+  C:04B4H         LINE#         60
+  C:04B4H         LINE#         62
+  C:04B6H         LINE#         63
+  C:04B6H         LINE#         64
+  C:04B8H         LINE#         65
+  C:04BCH         LINE#         66
+  C:04C0H         LINE#         67
+  C:04C7H         LINE#         68
+  C:04C7H         LINE#         69
+  C:04CAH         LINE#         70
+  C:04CEH         LINE#         71
+  -------         ENDPROC       _DS18B20WR
+  -------         PROC          DS18B20RD
+  -------         DO            
+  D:0005H         SYMBOL        value
+  D:0003H         SYMBOL        i
+  -------         ENDDO         
+  C:0494H         LINE#         72
+  C:0494H         LINE#         73
+  C:0494H         LINE#         75
+  C:0496H         LINE#         76
+  C:0496H         LINE#         77
+  C:0498H         LINE#         78
+  C:049CH         LINE#         79
+  C:049EH         LINE#         80
+  C:04A4H         LINE#         81
+  C:04ABH         LINE#         82
+  C:04AFH         LINE#         83
+  C:04B1H         LINE#         84
+  -------         ENDPROC       DS18B20RD
+  -------         PROC          READTEMP
+  -------         DO            
+  D:0007H         SYMBOL        b
+  -------         ENDDO         
+  C:03E5H         LINE#         85
+  C:03E5H         LINE#         86
+  C:03E5H         LINE#         88
+  C:03E8H         LINE#         89
+  C:03EDH         LINE#         90
+  C:03F2H         LINE#         91
+  C:03F9H         LINE#         92
+  C:03FCH         LINE#         93
+  C:0401H         LINE#         94
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/25/2018  11:37:23  PAGE 5
+
+
+  C:0406H         LINE#         95
+  C:040BH         LINE#         96
+  C:040EH         LINE#         97
+  C:0413H         LINE#         98
+  C:0417H         LINE#         99
+  C:0420H         LINE#         100
+  C:0423H         LINE#         101
+  C:0423H         LINE#         102
+  -------         ENDPROC       READTEMP
+  -------         PROC          DISPLAY
+  -------         DO            
+  D:0025H         SYMBOL        i
+  D:0027H         SYMBOL        k
+  D:0029H         SYMBOL        dio
+  -------         ENDDO         
+  C:022BH         LINE#         103
+  C:022BH         LINE#         104
+  C:022BH         LINE#         107
+  C:0243H         LINE#         108
+  C:025DH         LINE#         109
+  C:0262H         LINE#         110
+  C:0267H         LINE#         111
+  C:0267H         LINE#         112
+  C:0271H         LINE#         113
+  C:0282H         LINE#         114
+  C:0287H         LINE#         115
+  C:028CH         LINE#         116
+  C:028CH         LINE#         117
+  C:0291H         LINE#         118
+  C:0293H         LINE#         119
+  C:029AH         LINE#         120
+  C:029CH         LINE#         122
+  C:029CH         LINE#         123
+  C:02A1H         LINE#         124
+  C:02A4H         LINE#         125
+  C:02A4H         LINE#         126
+  C:02B2H         LINE#         127
+  C:02C6H         LINE#         128
+  C:02DCH         LINE#         129
+  C:02E1H         LINE#         130
+  C:02ECH         LINE#         131
+  C:0304H         LINE#         132
+  C:0309H         LINE#         133
+  -------         ENDPROC       DISPLAY
+  -------         PROC          _MOTOSPEED
+  D:0006H         SYMBOL        i
+  C:04F9H         LINE#         135
+  C:04F9H         LINE#         136
+  C:04F9H         LINE#         137
+  C:0503H         LINE#         138
+  C:0503H         LINE#         139
+  C:0505H         LINE#         140
+  C:0507H         LINE#         141
+  -------         ENDPROC       _MOTOSPEED
+  -------         PROC          MAIN
+  C:039AH         LINE#         142
+  C:039AH         LINE#         143
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/25/2018  11:37:23  PAGE 6
+
+
+  C:039AH         LINE#         144
+  C:039CH         LINE#         145
+  C:039FH         LINE#         146
+  C:039FH         LINE#         147
+  C:039FH         LINE#         148
+  C:03A4H         LINE#         149
+  C:03A7H         LINE#         151
+  C:03B4H         LINE#         152
+  C:03BBH         LINE#         153
+  C:03C8H         LINE#         154
+  C:03CFH         LINE#         155
+  C:03DCH         LINE#         156
+  C:03E3H         LINE#         157
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        蝊控调节_绷鞯缁_的速度
+
+  -------         MODULE        LCD
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:00A0H         PUBLIC        P2
+  C:051EH         PUBLIC        _LcdWriteData
+  B:00A0H.6       PUBLIC        LCD1602_RS
+  B:00A0H.5       PUBLIC        LCD1602_RW
+  C:04CFH         PUBLIC        LcdInit
+  B:00A0H.7       PUBLIC        LCD1602_E
+  C:0514H         PUBLIC        _LcdWriteCom
+  C:0435H         PUBLIC        _Lcd1602_Delay1ms
+  -------         PROC          L?0015
+  -------         ENDPROC       L?0015
+  -------         PROC          _LCD1602_DELAY1MS
+  D:0006H         SYMBOL        c
+  -------         DO            
+  D:0004H         SYMBOL        a
+  D:0005H         SYMBOL        b
+  -------         ENDDO         
+  C:0435H         LINE#         11
+  C:0435H         LINE#         12
+  C:0435H         LINE#         14
+  C:043EH         LINE#         15
+  C:043EH         LINE#         16
+  C:0440H         LINE#         17
+  C:0440H         LINE#         18
+  C:0444H         LINE#         19
+  C:0446H         LINE#         20
+  C:044DH         LINE#         22
+  -------         ENDPROC       _LCD1602_DELAY1MS
+  -------         PROC          _LCDWRITECOM
+  D:0007H         SYMBOL        com
+  C:0514H         LINE#         31
+  C:0514H         LINE#         32
+  C:0514H         LINE#         33
+  C:0516H         LINE#         34
+  C:0518H         LINE#         35
+  C:0518H         LINE#         37
+  C:0518H         LINE#         38
+  C:0518H         LINE#         40
+  C:0518H         LINE#         41
+BL51 BANKED LINKER/LOCATER V6.22                                                      07/25/2018  11:37:23  PAGE 7
+
+
+  C:051BH         LINE#         42
+  C:051DH         LINE#         43
+  -------         ENDPROC       _LCDWRITECOM
+  -------         PROC          _LCDWRITEDATA
+  D:0007H         SYMBOL        dat
+  C:051EH         LINE#         74
+  C:051EH         LINE#         75
+  C:051EH         LINE#         76
+  C:0520H         LINE#         77
+  C:0522H         LINE#         78
+  C:0522H         LINE#         80
+  C:0522H         LINE#         81
+  C:0522H         LINE#         83
+  C:0522H         LINE#         84
+  C:0525H         LINE#         85
+  C:0527H         LINE#         86
+  -------         ENDPROC       _LCDWRITEDATA
+  -------         PROC          LCDINIT
+  C:04CFH         LINE#         116
+  C:04CFH         LINE#         117
+  C:04CFH         LINE#         118
+  C:04D4H         LINE#         119
+  C:04D9H         LINE#         120
+  C:04DEH         LINE#         121
+  C:04E3H         LINE#         122
+  -------         ENDPROC       LCDINIT
+  -------         ENDMOD        LCD
+
+  -------         MODULE        ?C?FPMUL
+  C:0003H         PUBLIC        ?C?FPMUL
+  -------         ENDMOD        ?C?FPMUL
+
+  -------         MODULE        ?C?FCAST
+  C:0113H         PUBLIC        ?C?FCASTC
+  C:010EH         PUBLIC        ?C?FCASTI
+  C:0109H         PUBLIC        ?C?FCASTL
+  -------         ENDMOD        ?C?FCAST
+
+  -------         MODULE        ?C?CASTF
+  C:0147H         PUBLIC        ?C?CASTF
+  -------         ENDMOD        ?C?CASTF
+
+  -------         MODULE        ?C?UIDIV
+  C:01C8H         PUBLIC        ?C?UIDIV
+  -------         ENDMOD        ?C?UIDIV
+
+  -------         MODULE        ?C?LNEG
+  C:021DH         PUBLIC        ?C?LNEG
+  -------         ENDMOD        ?C?LNEG
+
+Program Size: data=46.0 xdata=0 code=1326
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

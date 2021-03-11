@@ -1,0 +1,15 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Project:</h2>
+I:\普中51-单核-A2开发板资料\5--实验程序\1--基础实验例程\实验4：蜂鸣器\template.uvproj
+Project File Date:  10/24/2019
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling main.c...
+linking...
+Program Size: data=9.0 xdata=0 code=37
+creating hex file from "template"...
+"template" - 0 Error(s), 0 Warning(s).

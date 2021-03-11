@@ -1,0 +1,83 @@
+C51 COMPILER V9.01   42MOTOR                                                               11/12/2018 09:42:33 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE 42MOTOR
+OBJECT MODULE PLACED IN 42Motor.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE 42Motor.c LARGE OPTIMIZE(0,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          #include "42Motor.h"
+   2          
+   3            u8 Motor_Step=0;
+   4          
+   5          void Motor_Delay1ms(u16 c)   //Îó²î 0us
+   6          {
+   7   1      
+   8   1        for (; c>0; c--)
+   9   1        {
+  10   2      //     for (b=199;b>0;b--)
+  11   2      //     {
+  12   2      //        
+  13   2      //     }      
+  14   2        }
+  15   1            
+  16   1      }
+  17          void Motor_Run(bit dir,u16 sudu)
+  18          {
+  19   1      
+  20   1        
+  21   1              switch(Motor_Step)
+  22   1                {
+  23   2                  case 0: INA=1;INB=0;INC=0;IND=0;if(dir)Motor_Step++;else Motor_Step=7;Motor_Delay1ms(20);break;
+  24   2                        
+  25   2                  case 1: INA=1;INB=0;INC=1;IND=0;if(dir)Motor_Step++;else Motor_Step--;Motor_Delay1ms(20);break;
+  26   2                      
+  27   2                  case 2: INA=0;INB=0;INC=1;IND=0;if(dir)Motor_Step++;else Motor_Step--;Motor_Delay1ms(20);break;
+  28   2                      
+  29   2                  case 3: INA=0;INB=1;INC=1;IND=0;if(dir)Motor_Step++;else Motor_Step--;Motor_Delay1ms(20);break;
+  30   2                      
+  31   2                  case 4: INA=0;INB=1;INC=0;IND=0;if(dir)Motor_Step++;else Motor_Step--;Motor_Delay1ms(20);break;
+  32   2                      
+  33   2                  case 5: INA=0;INB=1;INC=0;IND=1;if(dir)Motor_Step++;else Motor_Step--;Motor_Delay1ms(20);break;
+  34   2                      
+  35   2                  case 6: INA=0;INB=0;INC=0;IND=1;if(dir)Motor_Step++;else Motor_Step--;Motor_Delay1ms(20);break;
+  36   2                        
+  37   2                  case 7: INA=1;INB=0;INC=0;IND=1;if(dir)Motor_Step=0;else Motor_Step--;Motor_Delay1ms(20);break;
+  38   2                      
+  39   2                  
+  40   2                }
+  41   1                INA=0;INB=0;INC=0;IND=0;
+  42   1                Motor_Delay1ms(sudu);
+  43   1          
+  44   1      //  for(i=0;i<2000;i++)
+  45   1      //  {
+  46   1      //     INA=0;INB=0;INC=0;IND=0;Motor_Delay1ms(80);
+  47   1      //  
+  48   1      //     INA=0;INB=0;INC=1;IND=0;Motor_Delay1ms(100);
+  49   1      //    
+  50   1      //     INA=0;INB=1;INC=0;IND=0;Motor_Delay1ms(100);
+  51   1      //   
+  52   1      //    INA=0;INB=0;INC=0;IND=1;Motor_Delay1ms(100);
+  53   1      //    
+  54   1      //  }
+  55   1        
+C51 COMPILER V9.01   42MOTOR                                                               11/12/2018 09:42:33 PAGE 2   
+
+  56   1      }
+  57          
+  58          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    372    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      5    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

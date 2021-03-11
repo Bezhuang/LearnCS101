@@ -1,0 +1,136 @@
+C51 COMPILER V9.01   XPT2046                                                               09/20/2019 08:40:58 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE XPT2046
+OBJECT MODULE PLACED IN xpt2046.OBJ
+COMPILER INVOKED BY: D:\YZ\KEILC51\C51\BIN\C51.EXE xpt2046.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include "xpt2046.h"
+   2          #include "smg.h"
+   3          
+   4          /****************************************************************************
+   5          *函数名：SPI_Write
+   6          *输  入：dat：写入数据
+   7          *输  出：无
+   8          *功  能：使用SPI写入数据
+   9          ****************************************************************************/
+  10          
+  11          void SPI_Write(uchar dat)
+  12          {
+  13   1              uchar i;
+  14   1              CLK = 0;
+  15   1              for(i=0; i<8; i++)
+  16   1              {
+  17   2                      DIN = dat >> 7;         //放置最高位
+  18   2                      dat <<= 1;
+  19   2                      CLK = 0;                        //上升沿放置数据
+  20   2      
+  21   2                      CLK = 1;
+  22   2      
+  23   2              }
+  24   1      }
+  25          /****************************************************************************
+  26          *函数名：SPI_Read
+  27          *输  入：无
+  28          *输  出：dat：读取 到的数据
+  29          *功  能：使用SPI读取数据
+  30          ****************************************************************************/
+  31          
+  32          uint SPI_Read(void)
+  33          {
+  34   1              uint i, dat=0;
+  35   1              CLK = 0;
+  36   1              for(i=0; i<12; i++)             //接收12位数据
+  37   1              {
+  38   2                      dat <<= 1;
+  39   2      
+  40   2                      CLK = 1;
+  41   2                      CLK = 0;
+  42   2      
+  43   2                      dat |= DOUT;
+  44   2      
+  45   2              }
+  46   1              return dat;     
+  47   1      }
+  48          
+  49          /****************************************************************************
+  50          *函数名：Read_AD_Data
+  51          *输  入：cmd：读取的通道数据
+  52          *输  出：AD_Value：最终信号处理后返回的值
+  53          *功  能：读取通道采集的数据
+  54          ****************************************************************************/
+  55          uint Read_AD_Data(uchar cmd)
+C51 COMPILER V9.01   XPT2046                                                               09/20/2019 08:40:58 PAGE 2   
+
+  56          {
+  57   1              uchar i;
+  58   1              uint AD_Value;
+  59   1              CLK = 0;
+  60   1              CS  = 0;
+  61   1              SPI_Write(cmd);
+  62   1              for(i=6; i>0; i--);     //延时等待转换结果
+  63   1              CLK = 1;          //发送一个时钟周期，清除BUSY
+  64   1              _nop_();
+  65   1              _nop_();
+  66   1              CLK = 0;
+  67   1              _nop_();
+  68   1              _nop_();
+  69   1              AD_Value=SPI_Read();
+  70   1              CS = 1;
+  71   1              return AD_Value;        
+  72   1      }
+  73          
+  74          
+  75          
+  76          
+  77          void ADCdatapros()
+  78          {
+  79   1              u16 temp;
+  80   1              static u8 i;
+  81   1              if(i==50)
+  82   1              {
+  83   2                      i=0;
+  84   2                      temp = Read_AD_Data(0x94);              //   AIN0 电位器
+  85   2              }
+  86   1              i++;
+  87   1              DisPlayData[0]=smgduan[temp/1000];//千位
+  88   1              DisPlayData[1]=smgduan[temp%1000/100];//百位
+  89   1              DisPlayData[2]=smgduan[temp%1000%100/10];//个位
+  90   1              DisPlayData[3]=smgduan[temp%1000%100%10];
+  91   1              DisPlayData[4]=0;
+  92   1              DisPlayData[5]=0;
+  93   1              DisPlayData[6]=0;
+  94   1              DisPlayData[7]=0;               
+  95   1      }
+  96          
+  97          void ADC_Test(void)
+  98          {
+  99   1              
+ 100   1              while(1)
+ 101   1              {
+ 102   2                      ADCdatapros();   //数据处理函数
+ 103   2                      DigDisplay();//数码管显示函数
+ 104   2                      if(KeyValue!=ADC_TEST)
+ 105   2                      {
+ 106   3                              return; 
+ 107   3                      }
+ 108   2              }
+ 109   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    268    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+C51 COMPILER V9.01   XPT2046                                                               09/20/2019 08:40:58 PAGE 3   
+
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

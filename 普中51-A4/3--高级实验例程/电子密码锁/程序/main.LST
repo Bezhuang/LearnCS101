@@ -1,0 +1,479 @@
+C51 COMPILER V9.01   MAIN                                                                  10/24/2018 16:49:42 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE main.c LARGE OPTIMIZE(0,SPEED) BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          /**************************************************************************************
+   2          *                 电子密码锁                          *
+   3          实现现象：下载程序输入正确密码，会听到继电器吸合的声音
+   4          硬件连接：
+   5                     P1 -->矩阵键盘
+   6                     P20--> EEPROM模块SDA
+   7                     P21--> EEPROM模块SCL
+   8                     P22-->继电器模块J15
+   9                     
+  10                     矩阵键盘：
+  11                     0      1      2       3
+  12                     
+  13                     4      5      6       7
+  14                     
+  15                     8      9    返回    确定
+  16                     
+  17                     $      $      $       $
+  18          注意事项：无                                          
+  19          ***************************************************************************************/
+  20          
+  21          #include "reg52.h"           //此文件中定义了单片机的一些特殊功能寄存器
+  22          #include "lcd.h"
+  23          #include "key.h"
+  24          #include "i2c.h"
+  25          
+  26          #define u16 unsigned int    //对数据类型进行声明定义
+  27          #define u8 unsigned char
+  28          
+  29          sbit AS=P2^2;               //继电器
+  30          
+  31          /*****************************************************************************/
+  32          
+  33          /*****************************************************************************/
+  34          u8 pw_num,Error_Num,PassWord_Length=6;
+  35          u8 PASSWORD[]={8,8,8,8,8,8,0,0,0,0};
+  36          u8 INPUT_PW_Tab[10];
+  37          u8 key_num,Step,Step5,Load_first_flag=0;
+  38          /*****************************************************************************/
+  39          
+  40          /*******************************************************************************/
+  41          bit result_flag,Input_suc_flag;
+  42          bit List1=0;
+  43          /*****************************************************************************/
+  44          
+  45          /*******************************************************************************/
+  46          void Step_0();
+  47          void Step_1();
+  48          void Step_2();
+  49          void Step_3();
+  50          void Step_4();
+  51              
+  52          void Step_5();
+  53               void Step5_0();
+  54               void Step5_1();
+  55               void Step5_2();
+C51 COMPILER V9.01   MAIN                                                                  10/24/2018 16:49:42 PAGE 2   
+
+  56               void Step5_3();
+  57               void Step5_4();
+  58               void Step5_5();
+  59          void Step_6();
+  60          /********************************************************************************/
+  61          
+  62          /*******************************************************************************/
+  63          void CipherComparison();
+  64          void input_password(bit m);
+  65          void Read_Password();
+  66          
+  67          
+  68          
+  69          /*******************************************************************************
+  70          * 函 数 名       : main
+  71          * 函数功能     : 主函数
+  72          * 输    入       : 无
+  73          * 输    出       : 无
+  74          *******************************************************************************/
+  75          void main()
+  76          { 
+  77   1        u8 data1,a;
+  78   1        //  ShowString(0x00," Pechin Science ");  
+  79   1        //  At24c02Write(0,0);                                                //开机显示密码
+  80   1        LcdWriteCom(0x01);  //清屏
+  81   1        for(data1=0;data1<PassWord_Length+2;data1++)
+  82   1        {
+  83   2          a=At24c02Read(data1)+0x30;
+  84   2          LcdWriteData(a);  
+  85   2          delay(1000);  
+  86   2        }
+  87   1        
+  88   1        delay(1000);
+  89   1        LcdInit();
+  90   1        delay(1000);
+  91   1        Step=0;
+  92   1        Step5=0;
+  93   1        Error_Num=0x00;
+  94   1        Read_Password();
+  95   1        
+  96   1          //保存 密码长度
+  97   1      //    for(j=0;j<10;j++)
+  98   1      //    {
+  99   1      //      At24c02Write(j,j);
+ 100   1      //      delay(100); 
+ 101   1      //    }
+ 102   1      //  
+ 103   1      
+ 104   1        
+ 105   1        while(1)
+ 106   1              { 
+ 107   2                      key_num=KeyDown();                   //读取输入值
+ 108   2      
+ 109   2                          switch(Step)
+ 110   2                          {
+ 111   3                              case 0:
+ 112   3                               {Step_0();break;}
+ 113   3                              case 1:
+ 114   3                               {Step_1();break;}
+ 115   3                              case 2:
+ 116   3                               {Step_2();break;}
+ 117   3                              case 3:
+C51 COMPILER V9.01   MAIN                                                                  10/24/2018 16:49:42 PAGE 3   
+
+ 118   3                               {Step_3();break;}  
+ 119   3                              case 4:
+ 120   3                               {Step_4();break;}  
+ 121   3                              case 5:
+ 122   3                               {Step_5();break;}  
+ 123   3                              case 6:
+ 124   3                               {Step_6();break;}  
+ 125   3                                
+ 126   3                          }
+ 127   2      
+ 128   2               }        
+ 129   1      }
+ 130          
+ 131          /*****************************************************************************/
+ 132          
+ 133          /*******************************************************************************/
+ 134          void Step_0()
+ 135          {
+ 136   1                LcdInit();
+ 137   1                ShowString(0x00," Pechin Science ");                           //第一行显示Pechin Science 
+ 138   1                ShowString(0x10,"    WELCOME!    ");                           // 第二行显示 WELCOME!  
+ 139   1        
+ 140   1                while(KeyDown()==0xff)Step=1;                                  //  有按键按下进入下一步  
+ 141   1              
+ 142   1                
+ 143   1      }
+ 144          /*****************************************************************************/
+ 145          
+ 146          /*******************************************************************************/
+ 147          void Step_1()
+ 148          {
+ 149   1          LcdWriteCom(0x01);                                           //清屏
+ 150   1          ShowString(0x00,"Unlock");
+ 151   1          ShowString(0x0f,"<");                                        //1602第一行显示unlock
+ 152   1          ShowString(0x10,"Change Password");
+ 153   1          ShowString(0x1f," ");                                          // 1602第二行显示Change Password          
+             -                                                                    
+ 154   1          Step=2;                                                       //
+ 155   1      }
+ 156          /*****************************************************************************/
+ 157          
+ 158          /*******************************************************************************/
+ 159          void Step_2()
+ 160          {
+ 161   1      
+ 162   1        if(key_num!=0x0b)  
+ 163   1          {
+ 164   2                if((key_num==0x01) ||( key_num==0x09))                    //1键或9键按下
+ 165   2                {
+ 166   3                      List1=~List1;                           //Change Password
+ 167   3                      if(List1==0)
+ 168   3                        {                                                  
+ 169   4                        ShowString(0x0f,"<");                           // Unlock            <
+ 170   4                        ShowString(0x1f," ");                           // Change Password  
+ 171   4                      }
+ 172   3                      else
+ 173   3                      {
+ 174   4                        ShowString(0x0f," ");                           // Unlock            
+ 175   4                        ShowString(0x1f,"<");                           // Change Password   <
+ 176   4                      }
+ 177   3                }
+ 178   2          }
+C51 COMPILER V9.01   MAIN                                                                  10/24/2018 16:49:42 PAGE 4   
+
+ 179   1        else                                                           //确认键按下
+ 180   1        {
+ 181   2                if(List1==0){Step=3;}
+ 182   2                else        {Step=5;List1=0;}
+ 183   2        }
+ 184   1      }
+ 185          /*****************************************************************************/
+ 186          
+ 187          /*******************************************************************************/
+ 188          void Step_3()                                             //
+ 189          {
+ 190   1                      Step=4;
+ 191   1                      pw_num=0;
+ 192   1                      LcdInit();
+ 193   1                      ShowString(0x00,"Pass Word:  ");
+ 194   1                      
+ 195   1                  
+ 196   1      }
+ 197          /*****************************************************************************/
+ 198          
+ 199          /*******************************************************************************/
+ 200          void Step_4()                                                 
+ 201          {
+ 202   1           input_password(0);                                              //输入密码并以*显示
+ 203   1           if(Input_suc_flag==1){Step=6;}                                  //密码输入完成进入下一步
+ 204   1            Input_suc_flag=0;                                              //清除密码输入完成标志
+ 205   1      }
+ 206          /*****************************************************************************/
+ 207          
+ 208          /*******************************************************************************/
+ 209          void Step_5()                                                        //修改密码
+ 210          {
+ 211   1        switch(Step5)
+ 212   1        {
+ 213   2          
+ 214   2            case 0: {Step5_0();}  break;
+ 215   2            case 1: {Step5_1();}  break;
+ 216   2            case 2: {Step5_2();}  break;
+ 217   2            case 3: {Step5_3();}  break;
+ 218   2            case 4: {Step5_4();}  break;
+ 219   2            case 5: {Step5_5();}  break;
+ 220   2      
+ 221   2        }
+ 222   1      }
+ 223          /*****************************************************************************/
+ 224          
+ 225          /*******************************************************************************/
+ 226          void Step_6()
+ 227          {
+ 228   1        CipherComparison();                                //密码比对
+ 229   1        if(result_flag==1)                                 //密码正确
+ 230   1          {
+ 231   2              LcdInit();
+ 232   2              ShowString(0x00,"    WELCOME!");
+ 233   2              AS=0;                                         //开继电器
+ 234   2              delay(60000);
+ 235   2              delay(60000);
+ 236   2              AS=1;                                         //关继电器
+ 237   2          }
+ 238   1        else                                                //密码错误
+ 239   1          {
+ 240   2              LcdInit();
+C51 COMPILER V9.01   MAIN                                                                  10/24/2018 16:49:42 PAGE 5   
+
+ 241   2              ShowString(0x00,"Error 01!");
+ 242   2          }
+ 243   1          
+ 244   1          Step=0;
+ 245   1        
+ 246   1      
+ 247   1      }
+ 248          
+ 249          /****************************************************************************************
+ 250          密码输入函数
+ 251          密码长度：pw_num
+ 252          密码输入完成标志：Input_suc_flag
+ 253          *****************************************************************************************/
+ 254          
+ 255          void Step5_0()                 
+ 256          {
+ 257   1          LcdWriteCom(0x01);  //清屏
+ 258   1          ShowString (0x00,"Input PassWord:");     //1602显示：输入密码
+ 259   1          Step5=1;
+ 260   1          pw_num=0;
+ 261   1      }
+ 262          void Step5_1()                
+ 263          {
+ 264   1          input_password(0);                  //   输入密码并以*显示
+ 265   1          if(Input_suc_flag==1)               //密码输入完成
+ 266   1            {
+ 267   2                    Step5=2;                  //
+ 268   2                    Input_suc_flag=0;         //清除密码输入完成标志
+ 269   2            }
+ 270   1      }
+ 271          void Step5_2()                //
+ 272          {
+ 273   1           CipherComparison();                //密码比对
+ 274   1           Step5=3;
+ 275   1      }
+ 276          void Step5_3()                //
+ 277          {
+ 278   1          if(result_flag==0)         //        密码错误
+ 279   1              {
+ 280   2                    if(Error_Num<3)             //输出错误次数小于3
+ 281   2                    {
+ 282   3                      Error_Num++;
+ 283   3                      LcdInit();
+ 284   3                      ShowString (0x00,"Error 01");
+ 285   3                      delay(20000);
+ 286   3                      Step5=0;
+ 287   3                    }
+ 288   2                    else                          //密码错误次数大于3
+ 289   2                    {
+ 290   3                      Error_Num=0;
+ 291   3                      Step=0;
+ 292   3                    }
+ 293   2                
+ 294   2              }
+ 295   1          else                                   //密码正确
+ 296   1              {
+ 297   2                LcdInit();
+ 298   2                ShowString (0x00,"New PassWord:");  
+ 299   2                pw_num=0;
+ 300   2                Step5=4;
+ 301   2              }
+ 302   1            
+C51 COMPILER V9.01   MAIN                                                                  10/24/2018 16:49:42 PAGE 6   
+
+ 303   1                
+ 304   1      }
+ 305          void Step5_4()
+ 306          {
+ 307   1          input_password(1);                     //输入密码并显示
+ 308   1          if(Input_suc_flag==1)                  //输入完成
+ 309   1            { 
+ 310   2              Step5=5;
+ 311   2              Input_suc_flag=0;
+ 312   2              LcdWriteCom(0x01);  //清屏
+ 313   2              ShowString (0x00,"      OK!");
+ 314   2            }
+ 315   1      }
+ 316          void Step5_5()
+ 317          {
+ 318   1        unsigned char j;
+ 319   1        
+ 320   1        PassWord_Length=pw_num;                         //读取输入密码长度
+ 321   1        At24c02Write(0,Load_first_flag);        
+ 322   1        delay(100); 
+ 323   1        At24c02Write(1,PassWord_Length);                //保存 密码长度
+ 324   1        delay(100);
+ 325   1        for(j=0;j<PassWord_Length;j++)         
+ 326   1        {
+ 327   2          PASSWORD[j]=INPUT_PW_Tab[j];                   //读取密码
+ 328   2          At24c02Write(j+2,INPUT_PW_Tab[j]);             //保存密码至EEPROM
+ 329   2          delay(100);
+ 330   2      }
+ 331   1        Step5=0;
+ 332   1        Step=0;
+ 333   1      }
+ 334          
+ 335          
+ 336          void Read_Password()
+ 337          {
+ 338   1        unsigned char j;
+ 339   1      
+ 340   1        Load_first_flag=At24c02Read(0x00);
+ 341   1        if(Load_first_flag==0)             //初次运行
+ 342   1        {
+ 343   2        
+ 344   2          Load_first_flag=1;
+ 345   2          At24c02Write(0,0x01);
+ 346   2          delay(100);
+ 347   2          At24c02Write(1,0x06);           //写默认密码长度6至EEPROM
+ 348   2          delay(100);
+ 349   2          for(j=0;j<PassWord_Length;j++)
+ 350   2          {
+ 351   3            At24c02Write(j+2,8);              //写默认密码888888至EEPROM
+ 352   3            PASSWORD[j]=INPUT_PW_Tab[j];     //读密码
+ 353   3            delay(100);
+ 354   3          }
+ 355   2        }
+ 356   1        
+ 357   1        Load_first_flag=At24c02Read(0x00);
+ 358   1        PassWord_Length=At24c02Read(0x01);  //读取密码长度
+ 359   1        for(j=0;j<PassWord_Length;j++)       //读取密码
+ 360   1        {
+ 361   2          PASSWORD[j]=At24c02Read(j+2);
+ 362   2        }
+ 363   1        
+ 364   1      }
+C51 COMPILER V9.01   MAIN                                                                  10/24/2018 16:49:42 PAGE 7   
+
+ 365          void input_password(bit m)
+ 366          {
+ 367   1        unsigned char j;
+ 368   1        if(key_num!=0x0b)                                      //ok键没有按下
+ 369   1          {
+ 370   2                if(key_num<0x0a)                               //1-9按下
+ 371   2                {
+ 372   3                  INPUT_PW_Tab[pw_num]=key_num;                //保存至输入密码数组
+ 373   3                  pw_num=pw_num+1;                              //密码长度+1
+ 374   3                  
+ 375   3                   LcdWriteCom(0xc0);
+ 376   3                   for(j=0;j<pw_num;j++)
+ 377   3                      {
+ 378   4                              if(m==0) {LcdWriteData('*');  }                        //密码隐藏
+ 379   4                              else     {LcdWriteData(INPUT_PW_Tab[j]+0x30);}         //显示密码
+ 380   4                      }
+ 381   3                            
+ 382   3                }
+ 383   2                if(key_num==0x0a)                              //返回键按下
+ 384   2                {
+ 385   3                  if(pw_num!=0) {pw_num=pw_num-1;}
+ 386   3                  else          {Step=0;}
+ 387   3                  
+ 388   3                     
+ 389   3                  // ShowString (0x00,"Pass Word：");  
+ 390   3                          LcdWriteCom(0xc0);            
+ 391   3                          for(j=0;j<pw_num;j++)
+ 392   3                            {
+ 393   4                                  if(m==0) {LcdWriteData('*');  }                   //密码隐藏
+ 394   4                                  else     {LcdWriteData(INPUT_PW_Tab[j]+0x30);}    //显示密码  
+ 395   4                             }
+ 396   3                            LcdWriteData(' '); 
+ 397   3                }
+ 398   2          } 
+ 399   1        else                          //ok键按下
+ 400   1          {
+ 401   2            if(pw_num==0)   
+ 402   2                {
+ 403   3                    Step=0;
+ 404   3                    LcdWriteCom(0x01);
+ 405   3                    ShowString (0x00,"Error 02!");
+ 406   3                    delay(10000);
+ 407   3                }
+ 408   2          
+ 409   2            else{   
+ 410   3                    Input_suc_flag=1; 
+ 411   3                }
+ 412   2                 //AS=0;      
+ 413   2          }                
+ 414   1      }
+ 415          /*******************************************************
+ 416                          密码比对
+ 417          ********************************************************/
+ 418          void CipherComparison()
+ 419          { 
+ 420   1        u8 i,j=0;
+ 421   1      
+ 422   1        if(PassWord_Length==pw_num)                       //密码长度比对
+ 423   1        {
+ 424   2          for(i=0;i<PassWord_Length;i++)                  //密码比对
+ 425   2          {
+ 426   3            
+C51 COMPILER V9.01   MAIN                                                                  10/24/2018 16:49:42 PAGE 8   
+
+ 427   3              if(PASSWORD[i]!=INPUT_PW_Tab[i])
+ 428   3                {
+ 429   4                  result_flag=0;break;                     //密码错误
+ 430   4                }
+ 431   3              else
+ 432   3                {
+ 433   4                  result_flag=1;                          //密码正确
+ 434   4                }
+ 435   3                  INPUT_PW_Tab[i]=0XFF;                   //清除密码缓存数组
+ 436   3          }
+ 437   2        }
+ 438   1        else
+ 439   1        {result_flag=0;}
+ 440   1        
+ 441   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1473    ----
+   CONSTANT SIZE    =    156    ----
+   XDATA SIZE       =     34    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      4    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

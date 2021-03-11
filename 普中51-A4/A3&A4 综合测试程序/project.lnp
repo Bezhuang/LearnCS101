@@ -1,0 +1,19 @@
+"main.obj",
+"key.obj",
+"public.obj",
+"led.obj",
+"time.obj",
+"beep.obj",
+"smg.obj",
+"leddz.obj",
+"zlmoto.obj",
+"bjmoto.obj",
+"eeprom.obj",
+"ds18b20.obj",
+"ds1302.obj",
+"xpt2046.obj",
+"dac.obj",
+"hwjs.obj",
+"lcd1602.obj" 
+TO "project" 
+RAMSIZE(256) 
