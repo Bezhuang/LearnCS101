@@ -11,11 +11,12 @@
 - Data Visualization With Python（IBM）
 - Databases and SQL for Data Science with Python（IBM）
 - Java初级训练营（阿里云侠客）
+- Java中级训练营（阿里云侠客）
 - STC89C52单片机（普中单核A4）
 
 ## 正在进行
 
 - 从C到C++教程（农大阚道宏、C语言中文网）
 - 天勤数据结构（2021）
-- Java中级训练营（阿里云侠客）
+- Java高级训练营（阿里云侠客）
 - Data Analysis With Python（IBM）
