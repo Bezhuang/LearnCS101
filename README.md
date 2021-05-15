@@ -4,26 +4,24 @@
 
 ### 目录
 
-- 2021阿里云Java训练营
-  - Java初级训练营（阿里云侠客）
-  - Java中级训练营（阿里云侠客）
-  - Java高级训练营（阿里云侠客）
-- C和C++语言
-  - C语言教程（郝斌）
-  - 从C到C++教程（农大阚道宏、C语言中文网）
-- IBM Data Analyst Certificate
-  - Python for Data Science and AI（IBM）
-  - Python Project for Data Science（IBM）
-  - Data Visualization With Python（IBM）
-  - Databases and SQL for Data Science with Python（IBM）
-  - Data Analysis With Python（IBM）
+- 名校公开课
+  - 数据结构（浙江大学）
+  - Python for Everybody（University of Michigan）
+- 阿里云开发者学院
+  - Java初级训练营
+  - Java中级训练营
+  - Java高级训练营
+- IBM Professional Certificates
+  - Data Science Methodology
+  - Python for Data Science and AI
+  - Python Project for Data Science
+  - Data Visualization With Python
+  - Databases and SQL for Data Science with Python
+  - Data Analysis With Python
   - Data Analyst Capstone Project
-- Programming with Mosh
-  - Learn JavaScript in 1 hour
-  - Object-oriented Programming in JavaScript
-- Python for Everybody（UMich）
-- STC89C52单片机（普中单核A4）
-- 数据结构和算法
-
-  - 浙大数据结构（陈越姥姥）
-  - 天勤数据结构（2021版笔记）
+- 编程学习
+  - C语言教程（郝斌）
+  - 从C到C++（农大阚道宏、C语言中文网）
+  - Learn JavaScript in 1 hour（Programming with Mosh）
+  - Object-oriented Programming in JavaScript（Programming with Mosh）
+  - STC89C52单片机（普中单核A4）
